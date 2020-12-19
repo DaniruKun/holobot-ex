@@ -13,7 +13,9 @@ defmodule Holobot.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Holobot.PubSub},
       # Start the Endpoint (http/https)
-      HolobotWeb.Endpoint
+      HolobotWeb.Endpoint,
+      # Start Finch
+      {Finch, name: HolofansAPIClient}
       # Start a worker by calling: Holobot.Worker.start_link(arg)
       # {Holobot.Worker, arg}
     ]
@@ -30,5 +32,14 @@ defmodule Holobot.Application do
   def config_change(changed, _new, removed) do
     HolobotWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  @doc """
+  Setup all Telegram related things during app start.
+  """
+  defp setup_telegram() do
+    Nadia.set_webhook(
+      Application.fetch_env!(:holobot, :webhook_base) <> Application.fetch_env!(:nadia, :token)
+    )
   end
 end

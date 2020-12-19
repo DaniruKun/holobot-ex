@@ -14,6 +14,7 @@ config :holobot, HolobotWeb.Endpoint,
   render_errors: [view: HolobotWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Holobot.PubSub,
   live_view: [signing_salt: "m2Hg0E/s"]
+  webhook_base: {:system, "WEBHOOK_URL_BASE", "https://localhost/"}
 
 # Configures Elixir's Logger
 config :logger, :console,
