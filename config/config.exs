@@ -28,6 +28,9 @@ config :phoenix, :json_library, Jason
 config :nadia,
   token: {:system, "TELEGRAM_TOKEN", "some_token"}
 
+config :holofans,
+  api_base_url: "https://api.holotools.app/v1"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
