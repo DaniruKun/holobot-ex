@@ -1,6 +1,4 @@
 defmodule Holobot.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
   require Logger
 
@@ -34,9 +32,6 @@ defmodule Holobot.Application do
     :ok
   end
 
-  @doc """
-  Setup all Telegram related things during app start.
-  """
   defp setup_telegram() do
     Nadia.set_webhook(
       Application.fetch_env!(:holobot, :webhook_base) <> Application.fetch_env!(:nadia, :token)

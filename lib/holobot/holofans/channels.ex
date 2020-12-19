@@ -3,16 +3,16 @@ defmodule Holobot.Holofans.Channels do
   Holofans API channels context.
   """
 
-  @holofans_api "https://api.holotools.app/v1/"
+  @holofans_api "https://api.holotools.app/v1"
 
   alias Holobot.Holofans.Channel
   import Finch
 
-
   def get_channels() do
-    req = build(:get, @holofans_api <> "channels?sort=name")
+    encoded_query = URI.encode_query(%{"sort" => "name"})
+    req = build(:get, @holofans_api <> "/channels?" <> encoded_query)
     {:ok, resp} = request(req, HolofansAPIClient)
-    {:ok, decoded_body} = resp.body |> Jason.decode
+    {:ok, decoded_body} = resp.body |> Jason.decode()
     decoded_body |> Map.get("channels")
   end
 end

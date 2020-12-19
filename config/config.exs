@@ -13,7 +13,7 @@ config :holobot, HolobotWeb.Endpoint,
   secret_key_base: "pPO4xRPOjXB5z5+b+/A7zynqOBY09O4pn31Yeo9410+kIb/DAg3DCjrsE4uDW2x+",
   render_errors: [view: HolobotWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Holobot.PubSub,
-  live_view: [signing_salt: "m2Hg0E/s"]
+  live_view: [signing_salt: "m2Hg0E/s"],
   webhook_base: {:system, "WEBHOOK_URL_BASE", "https://localhost/"}
 
 # Configures Elixir's Logger
