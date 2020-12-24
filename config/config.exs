@@ -15,6 +15,9 @@ config :holobot, HolobotWeb.Endpoint,
   pubsub_server: Holobot.PubSub,
   live_view: [signing_salt: "m2Hg0E/s"]
 
+config :holobot,
+  holofans_api: "https://api.holotools.app/"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
