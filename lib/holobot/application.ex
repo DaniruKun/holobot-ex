@@ -1,6 +1,7 @@
 defmodule Holobot.Application do
   @moduledoc false
   require Logger
+  require Nadia
 
   use Application
 
@@ -19,6 +20,7 @@ defmodule Holobot.Application do
     ]
 
     Logger.info("Started the bot server", [])
+    #:ok = setup_telegram()
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Holobot.Supervisor]
@@ -34,7 +36,8 @@ defmodule Holobot.Application do
 
   defp setup_telegram() do
     Nadia.set_webhook(
-      Application.fetch_env!(:holobot, :webhook_base) <> Application.fetch_env!(:nadia, :token)
+      url: Application.fetch_env!(:nadia, :webhook_base)
+      # <> Application.fetch_env!(:nadia, :token)
     )
   end
 end

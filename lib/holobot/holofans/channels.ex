@@ -14,6 +14,10 @@ defmodule Holobot.Holofans.Channels do
     get_channel_resource("/channels?" <> encoded_query) |> Map.get("channels")
   end
 
+  def get_channel(holoapi_id) when is_integer(holoapi_id) do
+    get_channel(Integer.to_string(holoapi_id))
+  end
+
   @spec get_channel(binary) :: Channel
   def get_channel(holoapi_id) when is_bitstring(holoapi_id) do
     get_channel_resource("/channels/" <> holoapi_id)

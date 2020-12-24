@@ -24,7 +24,7 @@ defmodule HolobotWeb.Router do
   scope "/api", HolobotWeb do
     pipe_through :api
 
-    get "/telegram/" <> System.get_env("TELEGRAM_TOKEN", "webhook"), TelegramController, :update
+    post "/telegram", TelegramController, :update
   end
 
   # Enables LiveDashboard only for development

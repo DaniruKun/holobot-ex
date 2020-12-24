@@ -65,3 +65,8 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# config :nadia,
+#   webhook_base: "http://localhost/telegram/",
+#   token: "dev",
+#   base_url: "http://127.0.0.1:8081/"
