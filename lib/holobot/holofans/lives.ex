@@ -26,7 +26,7 @@ defmodule Holobot.Holofans.Lives do
     req = Finch.build(:get, url)
 
     {:ok, resp} = Finch.request(req, HolofansAPIClient)
-    {:ok, decoded_body} = resp.body |> Jason.decode()
-    decoded_body
+    {:ok, lives} = resp.body |> Jason.decode()
+    lives["live"] ++ lives["upcoming"] ++ lives["ended"]
   end
 end
