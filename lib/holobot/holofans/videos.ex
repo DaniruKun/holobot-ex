@@ -22,5 +22,4 @@ defmodule Holobot.Holofans.Videos do
     {:ok, decoded_body} = Jason.decode(resp.body)
     decoded_body
   end
-
 end

@@ -5,8 +5,9 @@ defmodule HolobotWeb.TelegramController do
 
   def update(conn, params) do
     Logger.info("Received update from Telegram", [])
-
-    #decoded_body = Jason.decode!(body)
+    # %{"somekey" => "b"} is the form of params, just JSON payload in Map form
+    IO.inspect(params)
+    # Where we handle updates from telegram, destructure the message and pass the info along to the required modules
     text(conn, "Ok")
   end
 end

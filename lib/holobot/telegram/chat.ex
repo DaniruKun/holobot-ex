@@ -8,6 +8,9 @@ defmodule Holobot.Telegram.Chat do
 
   @yt_vid_url_base "https://www.youtube.com/watch?v="
 
+  @doc """
+  Sends a formatted list of live stream entries in one single message to a Telegram chat.
+  """
   @spec send_live_list!(integer | binary, maybe_improper_list) :: {:ok, Nadia.Model.Message.t()}
   def send_live_list!(chat_id, lives) when is_list(lives) do
     live_channels_body =
@@ -25,6 +28,9 @@ defmodule Holobot.Telegram.Chat do
     ])
   end
 
+  @doc """
+  Send a help message to a Telegram chat.
+  """
   @spec send_help_msg!(integer | binary) ::
           {:error, Nadia.Model.Error.t()} | {:ok, Nadia.Model.Message.t()}
   def send_help_msg!(chat_id) do

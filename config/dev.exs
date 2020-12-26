@@ -55,6 +55,8 @@ config :holobot, HolobotWeb.Endpoint,
       ~r"lib/holobot_web/templates/.*(eex)$"
     ]
   ]
+config :holobot,
+  webhook_url: "https://83.99.235.15/api/telegram/"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
@@ -65,8 +67,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# config :nadia,
-#   webhook_base: "http://localhost/telegram/",
-#   token: "dev",
-#   base_url: "http://127.0.0.1:8081/"

@@ -13,13 +13,12 @@ defmodule Holobot.Application do
       {Phoenix.PubSub, name: Holobot.PubSub},
       # Start the Endpoint (http/https)
       HolobotWeb.Endpoint,
-      # Start Finch
+      # Start Finch HTTP client for fetching data from Holofans API
       {Finch, name: HolofansAPIClient}
       # Start a worker by calling: Holobot.Worker.start_link(arg)
       # {Holobot.Worker, arg}
     ]
-
-    Logger.info("Started the bot server", [])
+    setup_telegram()
     #:ok = setup_telegram()
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -35,8 +34,13 @@ defmodule Holobot.Application do
   end
 
   defp setup_telegram() do
+    webhook_url = Application.fetch_env!(:holobot, :webhook_url)
+
+    Logger.debug("Setting Telegram API webhook URL to: #{webhook_url}")
+
     Nadia.set_webhook(
-      url: Application.fetch_env!(:nadia, :webhook_base)
+      url: webhook_url,
+      ip_address: URI.parse(webhook_url).host
       # <> Application.fetch_env!(:nadia, :token)
     )
   end
