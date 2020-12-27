@@ -55,6 +55,7 @@ config :holobot, HolobotWeb.Endpoint,
       ~r"lib/holobot_web/templates/.*(eex)$"
     ]
   ]
+
 config :holobot,
   webhook_url: "https://83.99.235.15/api/telegram/"
 

@@ -6,7 +6,6 @@ defmodule Holobot.Application do
   use Application
 
   def start(_type, _args) do
-
     bot_name = Application.get_env(:holobot, :bot_name)
 
     unless String.valid?(bot_name) do

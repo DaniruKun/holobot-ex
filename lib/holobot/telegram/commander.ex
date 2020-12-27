@@ -1,5 +1,4 @@
 defmodule Holobot.Telegram.Commander do
-
   # Code injectors
 
   defmacro __using__(_opts) do

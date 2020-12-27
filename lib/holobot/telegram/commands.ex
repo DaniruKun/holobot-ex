@@ -26,13 +26,12 @@ defmodule Holobot.Telegram.Commands do
 
   command("start") do
     Logger.info("Command /start")
-
   end
 
   command("help") do
     Logger.info("Command /help")
 
-    send_message(Messages.build_help_msg, [{:parse_mode, "Markdown"}])
+    send_message(Messages.build_help_msg(), [{:parse_mode, "Markdown"}])
   end
 
   command("live", Live, :live)

@@ -14,6 +14,7 @@ defmodule Holobot.Holofans.Lives do
   """
   def get_lives!(filters \\ %{"lookback_hours" => "0", "max_upcoming_hours" => "96"}) do
     path = "/v1/live"
+
     url =
       @holofans_api_base
       |> URI.parse()

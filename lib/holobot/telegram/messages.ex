@@ -36,24 +36,49 @@ defmodule Holobot.Telegram.Messages do
   @spec build_help_msg() :: binary()
   def build_help_msg() do
     msg =
-      "*A-Chan* is a helpful Hololive bot that provides information about Hololive videos, live streams and channels!
+      "I am A-Chan (友人A), I can answer any questions about Hololive streams, channels and other things!
 
-*List of commands*
+You can add me to a group or ask me questions directly. To view a full list of commands, either just start typing `/` or type `/commands`
+"
 
-`/live [time]` - get list of livestreams that either already started or will start `[time]` into the future, e.g. `/live now`"
     msg
   end
 
   defp build_live_msg_entry(live) do
-    %{"channel" => %{"name" => name}, "yt_video_key" => yt, "title" => title} = live
+    %{
+      "channel" => %{"name" => ch_name},
+      "yt_video_key" => yt,
+      "title" => title,
+      "live_schedule" => scheduled_start,
+      "live_start" => actual_start
+    } = live
 
     # TODO: Refactor this hacky solution to non-escaped square brackets in titles when Markdown
     # parse mode is being used. Build message in HTML instead.
     clean_title =
       title
-       |> String.replace("[", "|")
-       |> String.replace("]", "|")
+      |> String.replace("[", "|")
+      |> String.replace("]", "|")
 
-    "#{name} [#{clean_title}](#{@yt_vid_url_base}#{yt})\n"
+    time =
+      if actual_start do
+        # Already started
+        {:ok, start, 0} = DateTime.from_iso8601(actual_start)
+        "#{start.hour}:#{start.minute |> zero_pad}"
+      else
+        # Hasn't started yet
+        {:ok, start, 0} = DateTime.from_iso8601(scheduled_start)
+        "#{start.hour}:#{start.minute |> zero_pad}"
+      end
+
+    time_formatted = "Starts at: #{time} (UTC)\n"
+
+    "#{ch_name}\n" <> time_formatted <> "[#{clean_title}](#{@yt_vid_url_base}#{yt})\n\n"
+  end
+
+  defp zero_pad(number, amount \\ 2) do
+    number
+    |> Integer.to_string()
+    |> String.pad_leading(amount, "0")
   end
 end
