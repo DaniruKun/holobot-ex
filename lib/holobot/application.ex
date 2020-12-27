@@ -23,8 +23,10 @@ defmodule Holobot.Application do
     children = [
       # Start Finch HTTP client for fetching data from Holofans API
       {Finch, name: HolofansAPIClient},
-      {Holobot.Poller, []},
-      {Holobot.Matcher, []}
+      # Start Telegram API poller
+      {Holobot.Telegram.Poller, []},
+      # Start matcher
+      {Holobot.Telegram.Matcher, []}
     ]
 
     opts = [strategy: :one_for_one, name: Holobot.Supervisor]
