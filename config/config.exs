@@ -16,7 +16,7 @@ config :holobot, HolobotWeb.Endpoint,
   live_view: [signing_salt: "m2Hg0E/s"]
 
 config :holobot,
-  bot_name: "@a_chan_bot",
+  bot_name: "a_chan_bot",
   holofans_api: "https://api.holotools.app/"
 
 # Configures Elixir's Logger

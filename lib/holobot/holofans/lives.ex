@@ -5,14 +5,14 @@ defmodule Holobot.Holofans.Lives do
 
   require Logger
   require Finch
-  require Jason
 
   @holofans_api_base Application.fetch_env!(:holobot, :holofans_api)
 
+  @spec get_lives!(any) :: list()
   @doc """
-  Get currently live, upcoming or ended streams.
+  Get currently live, upcoming and/or ended streams.
   """
-  def get_lives(filters \\ %{"lookback_hours" => "0", "max_upcoming_hours" => "96"}) do
+  def get_lives!(filters \\ %{"lookback_hours" => "0", "max_upcoming_hours" => "96"}) do
     path = "/v1/live"
     url =
       @holofans_api_base

@@ -2,7 +2,8 @@ defmodule Holobot.Telegram.Commands do
   use Holobot.Telegram.Commander
   use Holobot.Telegram.Router
 
-  alias Holobot.Telegram.Commands.Outside
+  alias Holobot.Telegram.Commands.Live
+  alias Holobot.Telegram.Messages
 
   require Logger
 
@@ -23,10 +24,18 @@ defmodule Holobot.Telegram.Commands do
     send_message("Hello World!")
   end
 
-  # You may split code to other modules using the syntax
-  # "Module, :function" instead of "do..end"
-  command("outside", Outside, :outside)
-  # For the sake of this tutorial, I'll define everything here
+  command("start") do
+    Logger.info("Command /start")
+
+  end
+
+  command("help") do
+    Logger.info("Command /help")
+
+    send_message(Messages.build_help_msg, [{:parse_mode, "Markdown"}])
+  end
+
+  command("live", Live, :live)
 
   command "question" do
     Logger.log(:info, "Command /question")

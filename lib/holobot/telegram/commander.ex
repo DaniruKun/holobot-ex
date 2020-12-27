@@ -1,7 +1,5 @@
 defmodule Holobot.Telegram.Commander do
 
-  @bot_name Application.get_env(:holobot, :bot_name)
-
   # Code injectors
 
   defmacro __using__(_opts) do
