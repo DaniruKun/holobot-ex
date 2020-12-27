@@ -18,7 +18,16 @@ defmodule Holobot.Telegram.Messages do
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
-    "*Currently live channels:*\n\n" <> live_channels_body
+    "*Live channels:*\n\n" <> live_channels_body
+  end
+
+  def build_upcoming_live_list(lives) when is_list(lives) do
+    upcoming_body =
+      lives
+      |> Stream.map(&build_live_msg_entry/1)
+      |> Enum.join()
+
+    "*Upcoming streams*\n\n" <> upcoming_body
   end
 
   @doc """
