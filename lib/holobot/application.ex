@@ -6,31 +6,31 @@ defmodule Holobot.Application do
   use Application
 
   def start(_type, _args) do
+
+    bot_name = Application.get_env(:holobot, :bot_name)
+
+    unless String.valid?(bot_name) do
+      IO.warn("""
+      Env not found Application.get_env(:holobot, :bot_name)
+      This will give issues when generating commands
+      """)
+    end
+
+    if bot_name == "" do
+      IO.warn("An empty bot_name env will make '/anycommand@' valid")
+    end
+
     children = [
       # Start the Telemetry supervisor
       HolobotWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Holobot.PubSub},
-      # Start the Endpoint (http/https)
-      HolobotWeb.Endpoint,
       # Start Finch HTTP client for fetching data from Holofans API
-      {Finch, name: HolofansAPIClient}
-      # Start a worker by calling: Holobot.Worker.start_link(arg)
-      # {Holobot.Worker, arg}
+      {Finch, name: HolofansAPIClient},
+      {Holobot.Poller, []},
+      {Holobot.Matcher, []}
     ]
-    setup_telegram()
-    #:ok = setup_telegram()
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+
     opts = [strategy: :one_for_one, name: Holobot.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
-  def config_change(changed, _new, removed) do
-    HolobotWeb.Endpoint.config_change(changed, removed)
-    :ok
   end
 
   defp setup_telegram() do
