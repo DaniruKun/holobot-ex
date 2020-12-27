@@ -60,6 +60,7 @@ defmodule Holobot.Telegram.Commands do
     case update.callback_query.data do
       "/choose joseph" ->
         answer_callback_query(text: "Indeed you have good taste.")
+        send_message("Good taste indeed")
 
       "/choose joseph-of-course" ->
         answer_callback_query(text: "I can't agree more.")

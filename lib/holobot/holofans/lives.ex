@@ -12,7 +12,13 @@ defmodule Holobot.Holofans.Lives do
   @doc """
   Get a map of currently live, upcoming and/or ended streams.
   """
-  def get_lives!(filters \\ %{"lookback_hours" => "0", "max_upcoming_hours" => "96"}) do
+  def get_lives!(
+        filters \\ %{
+          "lookback_hours" => "0",
+          "max_upcoming_hours" => "96",
+          "hide_channel_desc" => "1"
+        }
+      ) do
     path = "/v1/live"
 
     url =
