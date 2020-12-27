@@ -10,16 +10,7 @@ config :holobot, HolobotWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
-  check_origin: false,
-  watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
-      cd: Path.expand("../assets", __DIR__)
-    ]
-  ]
+  check_origin: false
 
 # ## SSL Support
 #
@@ -44,17 +35,6 @@ config :holobot, HolobotWeb.Endpoint,
 # If desired, both `http:` and `https:` keys can be
 # configured to run both http and https servers on
 # different ports.
-
-# Watch static and templates for browser reloading.
-config :holobot, HolobotWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/holobot_web/(live|views)/.*(ex)$",
-      ~r"lib/holobot_web/templates/.*(eex)$"
-    ]
-  ]
 
 config :holobot,
   webhook_url: "https://83.99.235.15/api/telegram/"

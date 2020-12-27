@@ -2,10 +2,15 @@ defmodule Holobot.Telegram.Commands do
   use Holobot.Telegram.Commander
   use Holobot.Telegram.Router
 
-  alias Holobot.Telegram.Commands.Live
+  alias Holobot.Telegram.Commands.Streams
+  alias Holobot.Telegram.Messages
+
+  alias Holobot.Holofans.Lives
   alias Holobot.Telegram.Messages
 
   require Logger
+
+  @default_msg_opts [{:parse_mode, "Markdown"}, {:disable_web_page_preview, true}]
 
   command("start") do
     Logger.info("Command /start")
@@ -19,51 +24,35 @@ defmodule Holobot.Telegram.Commands do
     send_message(Messages.build_help_msg(), [{:parse_mode, "Markdown"}])
   end
 
-  command("live", Live, :live)
-
-  command "question" do
-    Logger.log(:info, "Command /question")
-
-    {:ok, _} =
-      send_message("What's the best JoJo?",
-        # Nadia.Model is aliased from App.Commander
-        #
-        # See also: https://hexdocs.pm/nadia/Nadia.Model.InlineKeyboardMarkup.html
-        reply_markup: %Model.InlineKeyboardMarkup{
-          inline_keyboard: [
-            [
-              %{
-                callback_data: "/choose joseph",
-                text: "Joseph Joestar"
-              },
-              %{
-                callback_data: "/choose joseph-of-course",
-                text: "Joseph Joestar of course"
-              }
-            ],
-            [
-              # Read about fallbacks in the end of the file
-              %{
-                callback_data: "/typo-:p",
-                text: "Other"
-              }
-            ]
-          ]
-        }
-      )
-  end
+  command("streams", Streams, :streams_q)
 
   # You can create command interfaces for callback queries using this macro.
   callback_query_command "choose" do
-    Logger.log(:info, "Callback Query Command /choose")
+    Logger.info("Callback Query Command /choose")
+
+    %{"live" => live, "upcoming" => upcoming, "ended" => ended} = Lives.get_lives!()
 
     case update.callback_query.data do
-      "/choose joseph" ->
-        answer_callback_query(text: "Indeed you have good taste.")
-        send_message("Good taste indeed")
+      "/choose live" ->
+        answer_callback_query(text: "Showing live streams.")
 
-      "/choose joseph-of-course" ->
-        answer_callback_query(text: "I can't agree more.")
+        live
+        |> Messages.build_live_msg()
+        |> send_message(@default_msg_opts)
+
+      "/choose upcoming" ->
+        answer_callback_query(text: "Showing upcoming streams.")
+
+        upcoming
+        |> Messages.build_upcoming_msg()
+        |> send_message(@default_msg_opts)
+
+      "/choose ended" ->
+        answer_callback_query(text: "Showing ended streams.")
+
+        ended
+        |> Messages.build_ended_msg()
+        |> send_message(@default_msg_opts)
     end
   end
 

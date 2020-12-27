@@ -9,25 +9,42 @@ defmodule Holobot.Telegram.Messages do
   @yt_vid_url_base "https://youtu.be/"
 
   @doc """
-  Sends a formatted list of live stream entries in one single message to a Telegram chat.
+  Builds a formatted list of currently live streams.
   """
-  @spec build_live_list_msg(maybe_improper_list) :: binary()
-  def build_live_list_msg(lives) when is_list(lives) do
+  @spec build_live_msg(maybe_improper_list) :: binary()
+  def build_live_msg(lives) when is_list(lives) do
     live_channels_body =
       lives
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
-    "*Live channels:*\n\n" <> live_channels_body
+    "*Live channels*\n\n" <> live_channels_body
   end
 
-  def build_upcoming_live_list(lives) when is_list(lives) do
+  @doc """
+  Builds a formatted list of upcoming live streams.
+  """
+  @spec build_upcoming_msg(maybe_improper_list) :: binary()
+  def build_upcoming_msg(lives) when is_list(lives) do
     upcoming_body =
       lives
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
     "*Upcoming streams*\n\n" <> upcoming_body
+  end
+
+  @doc """
+  Builds a formatted list of ended live streams.
+  """
+  @spec build_ended_msg(maybe_improper_list) :: binary()
+  def build_ended_msg(lives) when is_list(lives) do
+    ended_body =
+      lives
+      |> Stream.map(&build_live_msg_entry/1)
+      |> Enum.join()
+
+    "*Ended streams*\n\n" <> ended_body
   end
 
   @doc """
