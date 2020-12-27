@@ -1,12 +1,12 @@
 defmodule Holobot.Telegram.Messages do
   @moduledoc """
-  Telegram chat context.
+  Telegram messages context.
   """
 
   require Logger
   require Nadia
 
-  @yt_vid_url_base "https://www.youtube.com/watch?v="
+  @yt_vid_url_base "https://youtu.be/"
 
   @doc """
   Sends a formatted list of live stream entries in one single message to a Telegram chat.
@@ -60,16 +60,16 @@ You can add me to a group or ask me questions directly. To view a full list of c
       |> String.replace("[", "|")
       |> String.replace("]", "|")
 
-    time =
+    {:ok, start, 0} =
       if actual_start do
         # Already started
-        {:ok, start, 0} = DateTime.from_iso8601(actual_start)
-        "#{start.hour}:#{start.minute |> zero_pad}"
+        DateTime.from_iso8601(actual_start)
       else
         # Hasn't started yet
-        {:ok, start, 0} = DateTime.from_iso8601(scheduled_start)
-        "#{start.hour}:#{start.minute |> zero_pad}"
+        DateTime.from_iso8601(scheduled_start)
       end
+
+    time = "#{start.hour}:#{start.minute |> zero_pad}"
 
     time_formatted = "Starts at: #{time} (UTC)\n"
 

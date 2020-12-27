@@ -7,25 +7,10 @@ defmodule Holobot.Telegram.Commands do
 
   require Logger
 
-  # You can create commands in the format `/command` by
-  # using the macro `command "command"`.
-  command ["hello", "hi"] do
-    # Logger module injected from App.Commander
-    Logger.log(:info, "Command /hello or /hi")
-
-    # You can use almost any function from the Nadia core without
-    # having to specify the current chat ID as you can see below.
-    # For example, `Nadia.send_message/3` takes as first argument
-    # the ID of the chat you want to send this message. Using the
-    # macro `send_message/2` defined at App.Commander, it is
-    # injected the proper ID at the function. Go take a look.
-    #
-    # See also: https://hexdocs.pm/nadia/Nadia.html
-    send_message("Hello World!")
-  end
-
   command("start") do
     Logger.info("Command /start")
+
+    send_message("A-Chan bot started! Type `/help` to learn more.", [{:parse_mode, "Markdown"}])
   end
 
   command("help") do
@@ -99,14 +84,6 @@ defmodule Holobot.Telegram.Commands do
           }
         }
       ])
-  end
-
-  # You can emulate argument access through nadia's update.message
-  command "argued" do
-    Logger.log(:info, "Command /argued")
-
-    [_command | args] = String.split(update.message.text, " ")
-    send_message("Your arguments were: " <> Enum.join(args, " "))
   end
 
   # Advanced Stuff
