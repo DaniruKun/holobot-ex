@@ -39,7 +39,8 @@ defmodule Holobot.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:nadia, "~> 0.7.0"},
-      {:finch, "~> 0.3.1"}
+      {:finch, "~> 0.3.1"},
+      {:poison, "~> 4.0.1"}
     ]
   end
 
@@ -51,7 +52,8 @@ defmodule Holobot.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "cmd npm install --prefix assets"]
+      setup: ["deps.get", "cmd npm install --prefix assets"],
+      server: ["run --no-halt"]
     ]
   end
 end

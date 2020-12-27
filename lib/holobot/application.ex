@@ -21,8 +21,6 @@ defmodule Holobot.Application do
     end
 
     children = [
-      # Start the Telemetry supervisor
-      HolobotWeb.Telemetry,
       # Start Finch HTTP client for fetching data from Holofans API
       {Finch, name: HolofansAPIClient},
       {Holobot.Poller, []},
