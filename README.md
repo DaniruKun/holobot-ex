@@ -1,19 +1,25 @@
 # Holobot
 
-To start your Phoenix server:
+![A-Chan](https://static.miraheze.org/hololivewiki/thumb/8/8a/Illustrator_Artwork_-_A-Chan_01.jpg/301px-Illustrator_Artwork_-_A-Chan_01.jpg)
 
-  * Install dependencies with `mix deps.get`
-  * Install Node.js dependencies with `npm install` inside the `assets` directory
-  * Start Phoenix endpoint with `mix phx.server`
+_Original art by [@ordan](https://twitter.com/ordan)_
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Holobot is a Telegram bot that allows users to get information about Hololive livestreams, videos and channels.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+The current bot is registered on Telegram as [@a_chan_bot](https://t.me/a_chan_bot)
 
-## Learn more
+## Setup
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+Make sure you have Elixir version `1.7` or later, plus the corresponding Erlang/OTP version.
+
+You will also need to have an active Telegram account.
+
+Run `mix setup`, then `mix` to start the server in dev mode by default, or `iex -S mix` to start with an active IEX shell.
+
+## License
+
+[LICENSE](LICENSE)
+
+## Disclaimer
+
+This project is not associated with [Hololive Production](https://en.hololive.tv/) or [Cover Corp](https://cover-corp.com/) in any way.
