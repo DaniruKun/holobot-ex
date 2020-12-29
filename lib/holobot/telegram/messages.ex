@@ -77,7 +77,7 @@ You can add me to a group or ask me questions directly. To view a full list of c
       |> String.replace("[", "|")
       |> String.replace("]", "|")
 
-    {:ok, start, 0} =
+    {:ok, datetime_start, 0} =
       if actual_start do
         # Already started
         DateTime.from_iso8601(actual_start)
@@ -86,11 +86,17 @@ You can add me to a group or ask me questions directly. To view a full list of c
         DateTime.from_iso8601(scheduled_start)
       end
 
-    time = "#{start.hour}:#{start.minute |> zero_pad}"
+    datetime_now = DateTime.utc_now()
 
-    time_formatted = "Starts at: #{time} (UTC)\n"
+    time_formatted =
+      case DateTime.compare(datetime_now, datetime_start) do
+        :gt -> "Started _#{trunc(DateTime.diff(datetime_now, datetime_start) / 60)}_ minutes ago"
+        :lt -> "Starts in _#{trunc(DateTime.diff(datetime_start, datetime_now) / 60)}_ minutes"
+      end
 
-    "#{ch_name}\n" <> time_formatted <> "[#{clean_title}](#{@yt_vid_url_base}#{yt})\n\n"
+    "#{ch_name}\n" <>
+      time_formatted <>
+      "\n[#{clean_title}](#{@yt_vid_url_base}#{yt})\n\n"
   end
 
   defp zero_pad(number, amount \\ 2) do
