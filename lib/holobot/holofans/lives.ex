@@ -15,7 +15,7 @@ defmodule Holobot.Holofans.Lives do
   def get_lives!(
         filters \\ %{
           "lookback_hours" => "0",
-          "max_upcoming_hours" => "96",
+          "max_upcoming_hours" => "12",
           "hide_channel_desc" => "1"
         }
       ) do

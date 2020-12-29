@@ -36,17 +36,37 @@ defmodule MessagesTest do
   end
 
   describe "messages" do
-    test_with_mock "build_live_msg/1 builds a msg of live channels when stream hasn't started yet", DateTime, [:passthrough], [utc_now: fn -> ~U[2020-12-29 21:00:00.000Z] end] do
+    test_with_mock(
+      "build_live_msg/1 builds a msg of live channels when stream hasn't started yet",
+      DateTime,
+      [:passthrough],
+      utc_now: fn -> ~U[2020-12-29 21:00:00.000Z] end
+    ) do
       # We mock a current UTC time that is one hour before scheduled start
       lives = lives_fixture()
 
       live_msg = Messages.build_live_msg(lives)
 
       expected_msg =
-        "*Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarts in _60_ minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "*Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
 
       assert expected_msg == live_msg
     end
 
+    test_with_mock(
+      "build_live_msg/1 builds a msg of live channels when stream has already started",
+      DateTime,
+      [:passthrough],
+      utc_now: fn -> ~U[2020-12-29 22:30:00.000Z] end
+    ) do
+      lives = lives_fixture(%{"live_start" => "2020-12-29T22:00:00.000Z"})
+
+      live_msg = Messages.build_live_msg(lives)
+
+      expected_msg =
+        "*Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+
+      assert expected_msg == live_msg
+    end
   end
 end

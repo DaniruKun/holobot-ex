@@ -90,8 +90,8 @@ You can add me to a group or ask me questions directly. To view a full list of c
 
     time_formatted =
       case DateTime.compare(datetime_now, datetime_start) do
-        :gt -> "Started _#{trunc(DateTime.diff(datetime_now, datetime_start) / 60)}_ minutes ago"
-        :lt -> "Starts in _#{trunc(DateTime.diff(datetime_start, datetime_now) / 60)}_ minutes"
+        :gt -> "Started *#{trunc(DateTime.diff(datetime_now, datetime_start) / 60)}* minutes ago"
+        :lt -> "Starts in *#{trunc(DateTime.diff(datetime_start, datetime_now) / 60)}* minutes"
       end
 
     "#{ch_name}\n" <>
