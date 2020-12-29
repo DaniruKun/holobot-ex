@@ -30,11 +30,10 @@ defmodule Holobot.Telegram.Commands do
   callback_query_command "choose" do
     Logger.info("Callback Query Command /choose")
 
-    %{"live" => live, "upcoming" => upcoming, "ended" => ended} = Lives.get_lives!()
-
     case update.callback_query.data do
       "/choose live" ->
         answer_callback_query(text: "Showing live streams.")
+        %{"live" => live} = Lives.get_lives!(%{"lookback_hours" => "0"})
 
         live
         |> Messages.build_live_msg()
@@ -42,6 +41,7 @@ defmodule Holobot.Telegram.Commands do
 
       "/choose upcoming" ->
         answer_callback_query(text: "Showing upcoming streams.")
+        %{"upcoming" => upcoming} = Lives.get_lives!(%{"lookback_hours" => "0"})
 
         upcoming
         |> Messages.build_upcoming_msg()
@@ -49,6 +49,7 @@ defmodule Holobot.Telegram.Commands do
 
       "/choose ended" ->
         answer_callback_query(text: "Showing ended streams.")
+        %{"ended" => ended} = Lives.get_lives!(%{"max_upcoming_hours" => "0"})
 
         ended
         |> Messages.build_ended_msg()

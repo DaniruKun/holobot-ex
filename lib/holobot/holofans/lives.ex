@@ -12,20 +12,20 @@ defmodule Holobot.Holofans.Lives do
   @doc """
   Get a map of currently live, upcoming and/or ended streams.
   """
-  def get_lives!(
-        filters \\ %{
-          "lookback_hours" => "0",
-          "max_upcoming_hours" => "12",
-          "hide_channel_desc" => "1"
-        }
-      ) do
+  def get_lives!(filters \\ %{}) do
     path = "/v1/live"
+
+    def_params = %{
+      "max_upcoming_hours" => "12",
+      "hide_channel_desc" => "1",
+      "lookback_hours" => "12"
+    }
 
     url =
       @holofans_api_base
       |> URI.parse()
       |> URI.merge(path)
-      |> Map.put(:query, URI.encode_query(filters))
+      |> Map.put(:query, URI.encode_query(Map.merge(def_params, filters)))
       |> URI.to_string()
 
     Logger.debug("Making request to URL: #{url}")
