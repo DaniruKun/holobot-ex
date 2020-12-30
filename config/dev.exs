@@ -36,8 +36,5 @@ config :holobot, HolobotWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
-config :holobot,
-  webhook_url: "https://83.99.235.15/api/telegram/"
-
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

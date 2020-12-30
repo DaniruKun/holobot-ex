@@ -12,7 +12,6 @@ telegram_token =
 
 config :holobot,
   http: [
-    port: String.to_integer(System.get_env("PORT") || "80"),
     transport_options: [socket_opts: [:inet6]]
   ],
   secret_key_base: telegram_token

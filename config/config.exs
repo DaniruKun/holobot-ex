@@ -8,7 +8,6 @@
 import Config
 
 config :holobot,
-  url: [host: "localhost"],
   http: [port: {:system, "PORT"}],
   bot_name: "a_chan_bot",
   holofans_api: "https://api.holotools.app/"

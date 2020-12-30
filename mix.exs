@@ -9,6 +9,7 @@ defmodule Holobot.MixProject do
       default_task: "server",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      build_embedded: Mix.env == :prod,
       aliases: aliases(),
       deps: deps()
     ]
