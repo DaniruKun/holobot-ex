@@ -41,7 +41,8 @@ defmodule Holobot.MixProject do
       {:nadia, "~> 0.7.0"},
       {:finch, "~> 0.3.1"},
       {:poison, "~> 4.0.1"},
-      {:mock, "~> 0.3.6"}
+      {:mock, "~> 0.3.6"},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -54,6 +55,7 @@ defmodule Holobot.MixProject do
   defp aliases do
     [
       setup: ["deps.get"],
+      lint: ["credo"],
       server: ["run --no-halt"]
     ]
   end
