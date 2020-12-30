@@ -1,1 +1,1 @@
-web: mix server
+worker: mix server
