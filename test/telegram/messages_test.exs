@@ -48,7 +48,7 @@ defmodule MessagesTest do
       live_msg = Messages.build_live_msg(lives)
 
       expected_msg =
-        "*Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "🔴 *Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
 
       assert expected_msg == live_msg
     end
@@ -64,7 +64,7 @@ defmodule MessagesTest do
       live_msg = Messages.build_live_msg(lives)
 
       expected_msg =
-        "*Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "🔴 *Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
 
       assert expected_msg == live_msg
     end

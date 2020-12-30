@@ -4,11 +4,10 @@
 # remember to add this file to your .gitignore.
 use Mix.Config
 
-secret_key_base =
-  System.get_env("SECRET_KEY_BASE") ||
+telegram_token =
+  System.get_env("TELEGRAM_TOKEN") ||
     raise """
     environment variable SECRET_KEY_BASE is missing.
-    You can generate one by calling: mix phx.gen.secret
     """
 
 config :holobot, HolobotWeb.Endpoint,
@@ -16,7 +15,7 @@ config :holobot, HolobotWeb.Endpoint,
     port: String.to_integer(System.get_env("PORT") || "4000"),
     transport_options: [socket_opts: [:inet6]]
   ],
-  secret_key_base: secret_key_base
+  secret_key_base: telegram_token
 
 # ## Using releases (Elixir v1.9+)
 #

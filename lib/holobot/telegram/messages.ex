@@ -18,7 +18,7 @@ defmodule Holobot.Telegram.Messages do
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
-    "*Live channels*\n\n" <> live_channels_body
+    "🔴 *Live channels*\n\n" <> live_channels_body
   end
 
   @doc """
@@ -31,7 +31,7 @@ defmodule Holobot.Telegram.Messages do
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
-    "*Upcoming streams*\n\n" <> upcoming_body
+    "⏰ *Upcoming streams*\n\n" <> upcoming_body
   end
 
   @doc """
@@ -44,7 +44,7 @@ defmodule Holobot.Telegram.Messages do
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
-    "*Ended streams*\n\n" <> ended_body
+    "⏹ *Ended streams*\n\n" <> ended_body
   end
 
   @doc """

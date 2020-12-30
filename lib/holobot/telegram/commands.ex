@@ -60,6 +60,7 @@ defmodule Holobot.Telegram.Commands do
   # You may also want make commands when in inline mode.
   # Be sure to enable inline mode first: https://core.telegram.org/bots/inline
   # Try by typping "@your_bot_name /what-is something"
+  # This will execute a query after the user stops typing in the query input
   inline_query_command "what-is" do
     Logger.log(:info, "Inline Query Command /what-is")
 

@@ -1,4 +1,7 @@
 defmodule Holobot.Telegram.Commands.Streams do
+  @moduledoc """
+  Streams query command handler.
+  """
   use Holobot.Telegram.Commander
 
   def streams_q(update) do
