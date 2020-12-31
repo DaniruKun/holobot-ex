@@ -74,4 +74,11 @@ defmodule Holobot.Helpers do
 
     Map.get(channel_emoji, yt_channel_id, "")
   end
+
+  def tokenize_msg(msg_text) when is_binary(msg_text) do
+    msg_text
+    |> String.replace(~r/[[:punct:]]/, "")
+    |> String.downcase()
+    |> String.split()
+  end
 end
