@@ -26,13 +26,6 @@ defmodule Holobot.Telegram.Commands.Streams do
                 callback_data: "/choose ended",
                 text: "Ended"
               }
-            ],
-            [
-              # Read about fallbacks in the end of the file
-              %{
-                callback_data: "/typo-:p",
-                text: "Other"
-              }
             ]
           ]
         }

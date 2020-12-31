@@ -52,13 +52,11 @@ defmodule Holobot.Telegram.Messages do
   """
   @spec build_help_msg() :: binary()
   def build_help_msg() do
-    msg =
-      "I am A-Chan (友人A), I can answer any questions about Hololive streams, channels and other things!
+    """
+    I am A-Chan (友人A), I can answer any questions about Hololive streams, channels and other things!
 
-You can add me to a group or ask me questions directly. To view a full list of commands, either just start typing `/` or type `/commands`
-"
-
-    msg
+    You can add me to a group or ask me questions directly. To view a full list of commands, either just start typing `/` or type /commands
+    """
   end
 
   defp build_live_msg_entry(live) do
