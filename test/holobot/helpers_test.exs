@@ -34,4 +34,13 @@ defmodule HelpersTest do
       end
     end
   end
+
+  describe "tokenizer" do
+    test "tokenize_msg/1 returns correct tokens for message with punctuation and multiple words" do
+      msg_text = "How are you doing?"
+
+      assert ["how", "are", "you", "doing"] = Helpers.tokenize_msg(msg_text)
+    end
+  end
+
 end
