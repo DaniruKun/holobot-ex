@@ -6,6 +6,8 @@ defmodule Holobot.Telegram.Messages do
   require Logger
   require Nadia
 
+  alias Holobot.Helpers
+
   @yt_vid_url_base "https://youtu.be/"
 
   @doc """
@@ -59,9 +61,16 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
+  @spec build_live_msg_entry(%{
+          channel: %{name: binary()},
+          yt_video_key: binary(),
+          title: binary(),
+          live_schedule: binary(),
+          live_start: binary()
+        }) :: binary()
   defp build_live_msg_entry(live) do
     %{
-      "channel" => %{"name" => ch_name},
+      "channel" => channel,
       "yt_video_key" => yt,
       "title" => title,
       "live_schedule" => scheduled_start,
@@ -90,9 +99,12 @@ defmodule Holobot.Telegram.Messages do
       case DateTime.compare(datetime_now, datetime_start) do
         :gt -> "Started *#{trunc(DateTime.diff(datetime_now, datetime_start) / 60)}* minutes ago"
         :lt -> "Starts in *#{trunc(DateTime.diff(datetime_start, datetime_now) / 60)}* minutes"
+        :eq -> "Live now!"
       end
 
-    "#{ch_name}\n" <>
+    ch_emoji = Helpers.get_channel_emoji(channel)
+
+    "#{ch_emoji}#{channel["name"]}\n" <>
       time_formatted <>
       "\n[#{clean_title}](#{@yt_vid_url_base}#{yt})\n\n"
   end

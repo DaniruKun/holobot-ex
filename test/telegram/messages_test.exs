@@ -25,7 +25,7 @@ defmodule MessagesTest do
     "live_end" => nil,
     "live_schedule" => "2020-12-29T22:00:00.000Z",
     "live_start" => nil,
-    "live_viewers" => 15000,
+    "live_viewers" => 15_000,
     "status" => "live",
     "thumbnail" => nil,
     "title" => "【Minecraft】 exPLOSION!",
@@ -49,7 +49,7 @@ defmodule MessagesTest do
       live_msg = Messages.build_live_msg(lives)
 
       expected_msg =
-        "🔴 *Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
 
       assert expected_msg == live_msg
     end
@@ -65,7 +65,7 @@ defmodule MessagesTest do
       live_msg = Messages.build_live_msg(lives)
 
       expected_msg =
-        "🔴 *Live channels*\n\nNinomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
 
       assert expected_msg == live_msg
     end
