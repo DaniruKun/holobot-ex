@@ -14,12 +14,15 @@ defmodule Holobot.Telegram.Commands.Other do
     resp = update.message.text |> tokenize() |> parse()
 
     if resp do
-      send_message(resp)
+      {:ok, _} = send_message(resp)
     end
   end
 
   defp tokenize(src) when is_binary(src) do
-    src |> String.downcase() |> String.split()
+    src
+    |> String.replace(~r/[[:punct:]]/, "")
+    |> String.downcase()
+    |> String.split()
   end
 
   defp parse(tokens) do
