@@ -1,4 +1,5 @@
 defmodule MessagesTest do
+  @moduledoc false
   use ExUnit.Case, async: true
 
   alias Holobot.Telegram.Messages
