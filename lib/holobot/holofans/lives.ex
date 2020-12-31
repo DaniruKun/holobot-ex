@@ -18,7 +18,7 @@ defmodule Holobot.Holofans.Lives do
     def_params = %{
       "max_upcoming_hours" => "12",
       "hide_channel_desc" => "1",
-      "lookback_hours" => "12"
+      "lookback_hours" => "6"
     }
 
     url =

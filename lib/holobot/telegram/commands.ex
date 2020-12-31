@@ -1,8 +1,12 @@
 defmodule Holobot.Telegram.Commands do
+  @moduledoc """
+  Commands handler module.
+  """
   use Holobot.Telegram.Commander
   use Holobot.Telegram.Router
 
   alias Holobot.Telegram.Commands.Streams
+  alias Holobot.Telegram.Commands.Other
   alias Holobot.Telegram.Messages
 
   alias Holobot.Holofans.Lives
@@ -25,6 +29,20 @@ defmodule Holobot.Telegram.Commands do
   end
 
   command("streams", Streams, :streams_q)
+
+  command("commands") do
+    available_commands = """
+    List of available commands:
+
+    /start - Starts the bot
+    /help - Get info about A-Chan
+    /streams - Get a list of live streams interactively
+    /commands - Shows this list of commands
+
+    """
+
+    send_message(available_commands)
+  end
 
   # You can create command interfaces for callback queries using this macro.
   callback_query_command "choose" do
@@ -132,11 +150,6 @@ defmodule Holobot.Telegram.Commands do
       ])
   end
 
-  # The `message` macro must come at the end since it matches anything.
-  # You may use it as a fallback.
-  message do
-    Logger.log(:warn, "Did not match the message")
-
-    send_message("Sorry, I couldn't understand you")
-  end
+  # Fallback message handler.
+  message(Other, :other)
 end
