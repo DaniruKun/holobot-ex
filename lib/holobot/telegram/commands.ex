@@ -41,6 +41,8 @@ defmodule Holobot.Telegram.Commands do
     /streams - Get a list of live streams interactively
     /channels - Get a list of channels interactively
     /commands - Shows this list of commands
+
+    You can make inline queries by typing @a_chan_bot query/command
     """
 
     send_message(available_commands)
@@ -84,23 +86,8 @@ defmodule Holobot.Telegram.Commands do
     # answer_callback_query(text: "Sorry, but there is no JoJo better than Joseph.")
   end
 
-  # Rescues any unmatched inline query.
-  inline_query do
-    Logger.log(:warn, "Did not match any inline query")
-
-    :ok =
-      answer_inline_query([
-        %InlineQueryResult.Article{
-          id: "1",
-          title: "Darude-Sandstorm Non non Biyori Renge Miyauchi Cover 1 Hour",
-          thumb_url: "https://img.youtube.com/vi/yZi89iQ11eM/3.jpg",
-          description: "Did you mean Darude Sandstorm?",
-          input_message_content: %{
-            message_text: "https://www.youtube.com/watch?v=yZi89iQ11eM"
-          }
-        }
-      ])
-  end
+  # Rescues any unmatched inline query, by default just list live channels.
+  inline_query(Live, :live)
 
   # Fallback message handler.
   message(Other, :other)
