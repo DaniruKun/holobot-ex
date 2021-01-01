@@ -8,14 +8,8 @@ defmodule Holobot.Telegram.Commands do
   alias Holobot.Telegram.Commands.Streams
   alias Holobot.Telegram.Commands.Channels
   alias Holobot.Telegram.Commands.Other
-  alias Holobot.Telegram.Messages
-
-  alias Holobot.Holofans.Lives
-  alias Holobot.Telegram.Messages
 
   require Logger
-
-  @default_msg_opts [{:parse_mode, "Markdown"}, {:disable_web_page_preview, true}]
 
   command("start") do
     Logger.info("Command /start")
@@ -26,7 +20,7 @@ defmodule Holobot.Telegram.Commands do
   command("help") do
     Logger.info("Command /help")
 
-    send_message(Messages.build_help_msg(), [{:parse_mode, "Markdown"}])
+    send_message(Holobot.Telegram.Messages.build_help_msg(), [{:parse_mode, "Markdown"}])
   end
 
   command("streams", Streams, :streams)
@@ -44,41 +38,11 @@ defmodule Holobot.Telegram.Commands do
     /start - Starts the bot
     /help - Get info about A-Chan
     /streams - Get a list of live streams interactively
+    /channels - Get a list of channels interactively
     /commands - Shows this list of commands
     """
 
     send_message(available_commands)
-  end
-
-  # You can create command interfaces for callback queries using this macro.
-  callback_query_command "choose" do
-    Logger.info("Callback Query Command /choose")
-
-    case update.callback_query.data do
-      "/choose live" ->
-        answer_callback_query(text: "Showing live streams.")
-        %{"live" => live} = Lives.get_lives!(%{"lookback_hours" => "0"})
-
-        live
-        |> Messages.build_live_msg()
-        |> send_message(@default_msg_opts)
-
-      "/choose upcoming" ->
-        answer_callback_query(text: "Showing upcoming streams.")
-        %{"upcoming" => upcoming} = Lives.get_lives!(%{"lookback_hours" => "0"})
-
-        upcoming
-        |> Messages.build_upcoming_msg()
-        |> send_message(@default_msg_opts)
-
-      "/choose ended" ->
-        answer_callback_query(text: "Showing ended streams.")
-        %{"ended" => ended} = Lives.get_lives!(%{"max_upcoming_hours" => "0"})
-
-        ended
-        |> Messages.build_ended_msg()
-        |> send_message(@default_msg_opts)
-    end
   end
 
   # You may also want make commands when in inline mode.
