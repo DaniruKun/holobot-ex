@@ -85,9 +85,14 @@ defmodule Holobot.Telegram.Messages do
     I am A-Chan (友人A), I can answer any questions about Hololive streams, channels and other things!
 
     You can add me to a group or ask me questions directly. To view a full list of commands, either just start typing `/` or type /commands
+
+    I also support inline queries.
     """
   end
 
+  @doc """
+  Returns a list of InlineQueryResultArticle structs.
+  """
   @spec build_live_articles_inline(list(live())) :: list(%Article{})
   def build_live_articles_inline(lives) do
     lives |> Enum.map(&build_live_article/1)
@@ -152,6 +157,8 @@ defmodule Holobot.Telegram.Messages do
 
   @spec build_live_article(live()) :: %Article{}
   defp build_live_article(live) do
+    url = "https://www.youtu.be/#{live["yt_video_key"]}"
+
     %Article{
       id: Enum.random(1..100),
       title: live["title"],
@@ -159,9 +166,9 @@ defmodule Holobot.Telegram.Messages do
       thumb_width: 640,
       thumb_height: 480,
       description: live["channel"]["name"],
-      url: "https://www.youtu.be/#{live["yt_video_key"]}",
+      url: url,
       input_message_content: %{
-        message_text: "https://www.youtu.be/#{live["yt_video_key"]}"
+        message_text: url
       }
     }
   end
