@@ -3,6 +3,7 @@ defmodule MessagesTest do
   use ExUnit.Case, async: true
 
   alias Holobot.Telegram.Messages
+  alias Nadia.Model.InlineQueryResult.Article
 
   import Mock
 
@@ -104,6 +105,31 @@ defmodule MessagesTest do
       """
 
       assert expected == Messages.build_channels_list_msg(channels)
+    end
+  end
+
+  describe "inline_articles" do
+    test "build_live_articles_inline/1 returns a correct list of Articles from a list of lives" do
+      lives = lives_fixture()
+
+      articles = Messages.build_live_articles_inline(lives)
+
+      expected = [
+        %Article{
+          id: articles |> Enum.at(0) |> Map.get(:id),
+          title: "【Minecraft】 exPLOSION!",
+          thumb_url: "https://img.youtube.com/vi/fDDyY3yq4OE/sddefault.jpg",
+          thumb_width: 640,
+          thumb_height: 480,
+          description: "Ninomae Ina'nis Ch. hololive-EN",
+          url: "https://www.youtu.be/fDDyY3yq4OE",
+          input_message_content: %{
+            message_text: "https://www.youtu.be/fDDyY3yq4OE"
+          }
+        }
+      ]
+
+      assert ^expected = articles
     end
   end
 end

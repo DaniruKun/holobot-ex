@@ -8,6 +8,7 @@ defmodule Holobot.Telegram.Commands do
   alias Holobot.Telegram.Commands.Streams
   alias Holobot.Telegram.Commands.Channels
   alias Holobot.Telegram.Commands.Other
+  alias Holobot.Telegram.Commands.Inline.Live
 
   require Logger
 
@@ -45,26 +46,7 @@ defmodule Holobot.Telegram.Commands do
     send_message(available_commands)
   end
 
-  # You may also want make commands when in inline mode.
-  # Be sure to enable inline mode first: https://core.telegram.org/bots/inline
-  # Try by typping "@your_bot_name /what-is something"
-  # This will execute a query after the user stops typing in the query input
-  inline_query_command "what-is" do
-    Logger.log(:info, "Inline Query Command /what-is")
-
-    :ok =
-      answer_inline_query([
-        %InlineQueryResult.Article{
-          id: "1",
-          title: "10 Hours What is Love Jim Carrey HD",
-          thumb_url: "https://img.youtube.com/vi/ER97mPHhgtM/3.jpg",
-          description: "Have a great time",
-          input_message_content: %{
-            message_text: "https://www.youtube.com/watch?v=ER97mPHhgtM"
-          }
-        }
-      ])
-  end
+  inline_query_command("live", Live, :live)
 
   # Advanced Stuff
   #
@@ -99,7 +81,7 @@ defmodule Holobot.Telegram.Commands do
   callback_query do
     Logger.log(:warn, "Did not match any callback query")
 
-    answer_callback_query(text: "Sorry, but there is no JoJo better than Joseph.")
+    # answer_callback_query(text: "Sorry, but there is no JoJo better than Joseph.")
   end
 
   # Rescues any unmatched inline query.
