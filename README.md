@@ -10,6 +10,8 @@ Holobot is a Telegram bot that allows users to get information about Hololive li
 
 The current bot is registered on Telegram as [@a_chan_bot](https://t.me/a_chan_bot)
 
+All data is fetched from <https://api.holotools.app>
+
 ## Features
 
 - Lookup live, upcoming and ended Hololive live streams
