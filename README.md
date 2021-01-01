@@ -25,6 +25,14 @@ The versions of Erlang and Elixir specified in [.tool-versions](.tool-versions)
 
 You will also need to have an active Telegram account.
 
+### Roadmap
+
+- [ ] Cache Holofans API resources in ETS/Mnesia tables
+- [ ] Add stateful logic for Telegram users to allow for user-specific interactions
+- [ ] Add more functionality to inline queries
+- [ ] Add a worker process to automatically publish updates to a Telegram channel
+- [ ] Improve chatbot-like NLP (maybe utilize some public cloud ML service)
+
 ## Run
 
 Run `mix setup`, then `mix` to start the server in dev mode by default, or `iex -S mix` to start with an active IEX shell.
