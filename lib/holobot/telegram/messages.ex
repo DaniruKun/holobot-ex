@@ -55,7 +55,7 @@ defmodule Holobot.Telegram.Messages do
       |> Stream.map(&build_channel_entry/1)
       |> Enum.join()
 
-      "*Channels*\n\n" <> channels_body
+    "*Channels*\n\n" <> channels_body
   end
 
   @doc """
@@ -105,13 +105,13 @@ defmodule Holobot.Telegram.Messages do
       end
 
     ch_emoji = Helpers.get_channel_emoji(channel)
+
     """
     #{ch_emoji}#{channel["name"]}
     #{time_formatted}
     [#{clean_title(title)}](#{@yt_vid_url_base}#{yt})
 
     """
-
   end
 
   def build_channel_entry(channel) do
@@ -142,7 +142,7 @@ defmodule Holobot.Telegram.Messages do
     # TODO: Refactor this hacky solution to non-escaped square brackets in titles when Markdown
     # parse mode is being used. Build message in HTML instead.
     title
-      |> String.replace("[", "|")
-      |> String.replace("]", "|")
+    |> String.replace("[", "|")
+    |> String.replace("]", "|")
   end
 end

@@ -42,5 +42,4 @@ defmodule HelpersTest do
       assert ["how", "are", "you", "doing"] = Helpers.tokenize_msg(msg_text)
     end
   end
-
 end

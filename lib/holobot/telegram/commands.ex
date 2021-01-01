@@ -31,6 +31,8 @@ defmodule Holobot.Telegram.Commands do
 
   command("streams", Streams, :streams)
 
+  callback_query_command("choose", Streams, :streams_query_command)
+
   command("channels", Channels, :channels)
 
   callback_query_command("channels", Channels, :channels_query_command)
