@@ -114,7 +114,7 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  def build_channel_entry(channel) do
+  defp build_channel_entry(channel) do
     %{
       "name" => name,
       "subscriber_count" => subs,

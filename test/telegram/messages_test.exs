@@ -32,11 +32,30 @@ defmodule MessagesTest do
     "yt_video_key" => "fDDyY3yq4OE"
   }
 
+  @valid_chan %{
+    "bb_space_id" => nil,
+    "description" => "こんぺこ！こんぺこ！こんぺこー！\nホロライブ3期生の兎田ぺこら（Usada Pekora)ぺこ👯‍♀️",
+    "id" => 36,
+    "name" => "Pekora Ch. 兎田ぺこら",
+    "photo" =>
+      "https://yt3.ggpht.com/ytc/AAUvwnjvkyPGzOmEXZ34mEFPlwMKTbCDl1ZkQ_HkxY-O5Q=s800-c-k-c0x00ffffff-no-rj",
+    "published_at" => "2019-07-03T06:28:25.000Z",
+    "subscriber_count" => 1_110_000,
+    "twitter_link" => "usadapekora",
+    "video_count" => 318,
+    "view_count" => 95_176_833,
+    "yt_channel_id" => "UC1DCedRgGHBdm81E1llLhOQ"
+  }
+
   defp lives_fixture(attrs \\ %{}) do
     [Enum.into(attrs, @valid_live)]
   end
 
-  describe "messages" do
+  defp channels_fixture(attrs \\ %{}) do
+    [Enum.into(attrs, @valid_chan)]
+  end
+
+  describe "stream messages" do
     test_with_mock(
       "build_live_msg/1 builds a msg of live channels when stream hasn't started yet",
       DateTime,
@@ -68,6 +87,23 @@ defmodule MessagesTest do
         "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
 
       assert expected_msg == live_msg
+    end
+  end
+
+  describe "channel messages" do
+    test "build_channel_list_msg/1 returns correct channel list message" do
+      channels = channels_fixture()
+
+      expected = """
+      *Channels*
+
+      👯[Pekora Ch. 兎田ぺこら](https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ)
+      1110K Subscribers
+      [Twitter](https://twitter.com/usadapekora)
+
+      """
+
+      assert expected == Messages.build_channels_list_msg(channels)
     end
   end
 end
