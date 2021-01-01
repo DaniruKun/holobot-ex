@@ -4,8 +4,10 @@ defmodule Holobot.Telegram.Commands.Streams do
   """
   use Holobot.Telegram.Commander
 
-  def streams_q(update) do
-    args = process_args(update.message.text)
+  alias Holobot.Helpers
+
+  def streams(update) do
+    args = Helpers.tokenize_msg(update.message.text)
 
     Logger.info("Command /streams #{args}")
 
@@ -30,15 +32,5 @@ defmodule Holobot.Telegram.Commands.Streams do
           ]
         }
       )
-  end
-
-  defp process_args(msg_text) do
-    parsed = String.split(msg_text, " ")
-
-    if length(parsed) == 1 do
-      nil
-    else
-      tl(parsed)
-    end
   end
 end

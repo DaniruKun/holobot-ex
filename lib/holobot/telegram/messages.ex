@@ -49,6 +49,15 @@ defmodule Holobot.Telegram.Messages do
     "⏹ *Ended streams*\n\n" <> ended_body
   end
 
+  def build_channels_list_msg(channels) do
+    channels_body =
+      channels
+      |> Stream.map(&build_channel_entry/1)
+      |> Enum.join()
+
+      "*Channels*\n\n" <> channels_body
+  end
+
   @doc """
   Returns bot help message.
   """
@@ -77,13 +86,6 @@ defmodule Holobot.Telegram.Messages do
       "live_start" => actual_start
     } = live
 
-    # TODO: Refactor this hacky solution to non-escaped square brackets in titles when Markdown
-    # parse mode is being used. Build message in HTML instead.
-    clean_title =
-      title
-      |> String.replace("[", "|")
-      |> String.replace("]", "|")
-
     {:ok, datetime_start, 0} =
       if actual_start do
         # Already started
@@ -103,15 +105,44 @@ defmodule Holobot.Telegram.Messages do
       end
 
     ch_emoji = Helpers.get_channel_emoji(channel)
+    """
+    #{ch_emoji}#{channel["name"]}
+    #{time_formatted}
+    [#{clean_title(title)}](#{@yt_vid_url_base}#{yt})
 
-    "#{ch_emoji}#{channel["name"]}\n" <>
-      time_formatted <>
-      "\n[#{clean_title}](#{@yt_vid_url_base}#{yt})\n\n"
+    """
+
+  end
+
+  def build_channel_entry(channel) do
+    %{
+      "name" => name,
+      "subscriber_count" => subs,
+      "yt_channel_id" => ch_id,
+      "twitter_link" => twitter
+    } = channel
+
+    ch_emoji = Helpers.get_channel_emoji(channel)
+
+    """
+    #{ch_emoji}[#{name}](https://www.youtube.com/channel/#{ch_id})
+    #{trunc(subs / 1000)}K Subscribers
+    [Twitter](https://twitter.com/#{twitter})
+
+    """
   end
 
   defp zero_pad(number, amount \\ 2) do
     number
     |> Integer.to_string()
     |> String.pad_leading(amount, "0")
+  end
+
+  defp clean_title(title) do
+    # TODO: Refactor this hacky solution to non-escaped square brackets in titles when Markdown
+    # parse mode is being used. Build message in HTML instead.
+    title
+      |> String.replace("[", "|")
+      |> String.replace("]", "|")
   end
 end

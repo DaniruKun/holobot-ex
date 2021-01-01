@@ -6,6 +6,7 @@ defmodule Holobot.Telegram.Commands do
   use Holobot.Telegram.Router
 
   alias Holobot.Telegram.Commands.Streams
+  alias Holobot.Telegram.Commands.Channels
   alias Holobot.Telegram.Commands.Other
   alias Holobot.Telegram.Messages
 
@@ -28,7 +29,11 @@ defmodule Holobot.Telegram.Commands do
     send_message(Messages.build_help_msg(), [{:parse_mode, "Markdown"}])
   end
 
-  command("streams", Streams, :streams_q)
+  command("streams", Streams, :streams)
+
+  command("channels", Channels, :channels)
+
+  callback_query_command("channels", Channels, :channels_query_command)
 
   command("commands") do
     available_commands = """
@@ -38,7 +43,6 @@ defmodule Holobot.Telegram.Commands do
     /help - Get info about A-Chan
     /streams - Get a list of live streams interactively
     /commands - Shows this list of commands
-
     """
 
     send_message(available_commands)

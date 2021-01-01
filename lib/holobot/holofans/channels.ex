@@ -10,8 +10,8 @@ defmodule Holobot.Holofans.Channels do
   import Finch
 
   @spec get_channels :: [Channel]
-  def get_channels() do
-    get_channel_resource("/v1/channels", %{"sort" => "name"}) |> Map.get("channels")
+  def get_channels(filter \\ %{"sort" => "name"}) do
+    get_channel_resource("/v1/channels", filter) |> Map.get("channels")
   end
 
   def get_channel(holoapi_id) when is_integer(holoapi_id) do
