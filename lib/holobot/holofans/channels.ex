@@ -5,11 +5,17 @@ defmodule Holobot.Holofans.Channels do
 
   @holofans_api_base Application.fetch_env!(:holobot, :holofans_api)
 
-  alias Holobot.Holofans.Channel
+  @type channel :: %{
+          name: binary(),
+          subscriber_count: integer(),
+          yt_channel_id: binary(),
+          twitter_link: binary()
+        }
+
   require Logger
   import Finch
 
-  @spec get_channels :: [Channel]
+  @spec get_channels :: list(channel())
   def get_channels(filter \\ %{"sort" => "name"}) do
     get_channel_resource("/v1/channels", filter) |> Map.get("channels")
   end
@@ -18,17 +24,17 @@ defmodule Holobot.Holofans.Channels do
     get_channel(Integer.to_string(holoapi_id))
   end
 
-  @spec get_channel(binary) :: Channel
+  @spec get_channel(binary) :: channel()
   def get_channel(holoapi_id) when is_bitstring(holoapi_id) do
     get_channel_resource("/v1/channels/#{holoapi_id}")
   end
 
-  @spec get_channel_yt(binary) :: Channel
+  @spec get_channel_yt(binary) :: channel()
   def get_channel_yt(yt_id) when is_bitstring(yt_id) do
     get_channel_resource("/v1/channels/youtube/#{yt_id}")
   end
 
-  @spec get_channel_bb(binary) :: Channel
+  @spec get_channel_bb(binary) :: channel()
   def get_channel_bb(bb_id) when is_bitstring(bb_id) do
     get_channel_resource("/v1/channels/bilibili/#{bb_id}")
   end

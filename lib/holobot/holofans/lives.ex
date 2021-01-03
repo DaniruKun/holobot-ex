@@ -8,6 +8,14 @@ defmodule Holobot.Holofans.Lives do
 
   @holofans_api_base Application.fetch_env!(:holobot, :holofans_api)
 
+  @type live :: %{
+          channel: Holobot.Holofans.Channels.channel(),
+          yt_video_key: binary(),
+          title: binary(),
+          live_schedule: binary(),
+          live_start: binary()
+        }
+
   @spec get_lives!(any) :: map()
   @doc """
   Get a map of currently live, upcoming and/or ended streams.

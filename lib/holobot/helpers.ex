@@ -5,7 +5,9 @@ defmodule Holobot.Helpers do
   Functions that are not strictly related to Holofans or Telegram domains.
   """
 
-  @spec get_channel_emoji(%{yt_channel_id: binary()}) :: binary()
+  alias Holobot.Holofans.Channels
+
+  @spec get_channel_emoji(Channels.channel()) :: binary()
   def get_channel_emoji(%{"yt_channel_id" => yt_channel_id}) do
     channel_emoji = %{
       # 0th Generation
@@ -16,7 +18,7 @@ defmodule Holobot.Helpers do
       "UC0TXe_LYZ4scaW2XMyi5_kw" => "⚒️",
       # 1st Generation
       "UCD8HOxPs4Xvsm8H0ZxXGiBw" => "🌟",
-      "UCHj_mh57PVMXhAUDphUQDFA" => "❣️",
+      "UC1CfXB_kRs3C-zaeTG3oGyg" => "♥️",
       "UCdn5BQ06XqgXoAxIhbqw5Rg" => "🌽",
       "UCQ0UDLQCjY0rmuxCDE38FGg" => "🏮",
       "UCLbtM3JZfRTg8v2KGag-RMw" => "🍎",
@@ -75,6 +77,7 @@ defmodule Holobot.Helpers do
     Map.get(channel_emoji, yt_channel_id, "")
   end
 
+  @spec tokenize_msg(binary) :: [binary]
   def tokenize_msg(msg_text) when is_binary(msg_text) do
     msg_text
     |> String.replace(~r/[[:punct:]]/, "")
