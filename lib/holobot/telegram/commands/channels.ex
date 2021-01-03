@@ -23,11 +23,11 @@ defmodule Holobot.Telegram.Commands.Channels do
               },
               %{
                 callback_data: "/channels top-subs",
-                text: "Top sub count"
+                text: "Top subs"
               },
               %{
                 callback_data: "/channels top-views",
-                text: "Top view count"
+                text: "Top views"
               }
             ]
           ]

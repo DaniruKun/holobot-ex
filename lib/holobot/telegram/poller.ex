@@ -1,4 +1,7 @@
 defmodule Holobot.Telegram.Poller do
+  @moduledoc """
+  Telegram poller GenServer, fetches updates from Telegram API.
+  """
   use GenServer
   require Logger
 
