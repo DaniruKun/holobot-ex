@@ -43,7 +43,9 @@ defmodule Holobot.MixProject do
       {:finch, "~> 0.3.1"},
       {:poison, "~> 4.0.1"},
       {:mock, "~> 0.3.6"},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
+      {:memento, "~> 0.3.1"},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 0.4", only: [:dev]}
     ]
   end
 
