@@ -1,4 +1,7 @@
 defmodule Holobot.Holofans.Video do
+  @moduledoc """
+  Video record schema and helper functions.
+  """
   use Memento.Table,
     attributes: [
       :yt_video_key,

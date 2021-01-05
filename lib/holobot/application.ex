@@ -14,7 +14,7 @@ defmodule Holobot.Application do
       # Start Finch HTTP client for fetching data from Holofans API
       {Finch, name: HolofansAPIClient},
       # Start caching server
-      {Holobot.Holofans.VideoServer, []},
+      {Holobot.Holofans.Videos, []},
       # Start Telegram API poller
       {Holobot.Telegram.Poller, []},
       # Start matcher
