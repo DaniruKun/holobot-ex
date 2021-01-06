@@ -8,32 +8,6 @@ defmodule MessagesTest do
 
   import Mock
 
-  @valid_live %{
-    "bb_video_id" => nil,
-    "channel" => %{
-      "bb_space_id" => nil,
-      "id" => 199_075,
-      "name" => "Ninomae Ina'nis Ch. hololive-EN",
-      "photo" =>
-        "https://yt3.ggpht.com/ytc/AAUvwng37V0l-NwF3bu7QA4XmOP5EZFwk5zJE-78OHP9=s800-c-k-c0x00ffffff-no-rj",
-      "published_at" => "2020-07-16T06:23:05.258Z",
-      "subscriber_count" => 656_000,
-      "twitter_link" => "ninomaeinanis",
-      "video_count" => 87,
-      "view_count" => 19_773_769,
-      "yt_channel_id" => "UCMwGHR0BTZuLsmjY_NT5Pwg"
-    },
-    "id" => 78_244_855,
-    "live_end" => nil,
-    "live_schedule" => "2020-12-29T22:00:00.000Z",
-    "live_start" => nil,
-    "live_viewers" => 15_000,
-    "status" => "live",
-    "thumbnail" => nil,
-    "title" => "【Minecraft】 exPLOSION!",
-    "yt_video_key" => "fDDyY3yq4OE"
-  }
-
   @valid_vid %Video{
     __meta__: Memento.Table,
     channel: %{
@@ -73,10 +47,6 @@ defmodule MessagesTest do
 
   defp video_fixture(attrs \\ %{}) do
     [Map.merge(@valid_vid, attrs)]
-  end
-
-  defp lives_fixture(attrs \\ %{}) do
-    [Enum.into(attrs, @valid_live)]
   end
 
   defp channels_fixture(attrs \\ %{}) do
@@ -133,27 +103,27 @@ defmodule MessagesTest do
 
       """
 
-      assert expected == Messages.build_channels_list_msg(channels)
+      assert ^expected = Messages.build_channels_list_msg(channels)
     end
   end
 
   describe "inline_articles" do
     test "build_live_articles_inline/1 returns a correct list of Articles from a list of lives" do
-      lives = lives_fixture()
+      vids = video_fixture()
 
-      articles = Messages.build_live_articles_inline(lives)
+      articles = Messages.build_live_articles_inline(vids)
 
       expected = [
         %Article{
           id: articles |> Enum.at(0) |> Map.get(:id),
-          title: "【Minecraft】 exPLOSION!",
-          thumb_url: "https://img.youtube.com/vi/fDDyY3yq4OE/sddefault.jpg",
+          title: "【BIRTHDAY STREAM】CAKE + a Special Announcement",
+          thumb_url: "https://img.youtube.com/vi/_AbZB1uuVjA/sddefault.jpg",
           thumb_width: 640,
           thumb_height: 480,
-          description: "Ninomae Ina'nis Ch. hololive-EN",
-          url: "https://www.youtu.be/fDDyY3yq4OE",
+          description: "Watson Amelia Ch. hololive-EN",
+          url: "https://www.youtu.be/_AbZB1uuVjA",
           input_message_content: %{
-            message_text: "https://www.youtu.be/fDDyY3yq4OE"
+            message_text: "https://www.youtu.be/_AbZB1uuVjA"
           }
         }
       ]

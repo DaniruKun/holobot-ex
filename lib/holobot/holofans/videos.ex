@@ -8,6 +8,7 @@ defmodule Holobot.Holofans.Videos do
   require Memento
 
   alias Holobot.Holofans.Video
+  alias Holobot.Holofans.Videos
 
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
@@ -106,7 +107,7 @@ defmodule Holobot.Holofans.Videos do
     Memento.Table.create!(Video)
   end
 
-  @spec cache_videos!(video_status()) :: any()
+  @spec cache_videos!(Videos.video_status()) :: any()
   defp cache_videos!(status) do
     # video request chunk size, <= 50
     step = 50

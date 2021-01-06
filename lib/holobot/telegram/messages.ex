@@ -12,6 +12,7 @@ defmodule Holobot.Telegram.Messages do
   alias Holobot.Holofans.Channels
   alias Holobot.Holofans.Lives
   alias Holobot.Holofans.Video
+  alias Holobot.Holofans.Videos
   alias Nadia.Model.InlineQueryResult.Article
 
   @yt_vid_url_base "https://youtu.be/"
@@ -61,7 +62,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Builds a formatted list of live streams for given status.
   """
-  @spec build_msg_for_status(list(Lives.live() | %Video{}), atom()) :: binary()
+  @spec build_msg_for_status(list(Lives.live() | %Video{}), Videos.video_status()) :: binary()
   def build_msg_for_status(videos, status) do
     body =
       videos
@@ -106,7 +107,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Returns a list of InlineQueryResultArticle structs.
   """
-  @spec build_live_articles_inline(list(Lives.live())) :: list(%Article{})
+  @spec build_live_articles_inline(list(%Video{})) :: list(%Article{})
   def build_live_articles_inline(lives) do
     lives |> Enum.map(&build_live_article/1)
   end
@@ -169,17 +170,17 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  @spec build_live_article(Lives.live()) :: %Article{}
+  @spec build_live_article(%Video{}) :: %Article{}
   defp build_live_article(live) do
-    url = "https://www.youtu.be/#{live["yt_video_key"]}"
+    url = "https://www.youtu.be/#{live.yt_video_key}"
 
     %Article{
       id: Enum.random(1..100),
-      title: live["title"],
-      thumb_url: "https://img.youtube.com/vi/#{live["yt_video_key"]}/sddefault.jpg",
+      title: live.title,
+      thumb_url: "https://img.youtube.com/vi/#{live.yt_video_key}/sddefault.jpg",
       thumb_width: 640,
       thumb_height: 480,
-      description: live["channel"]["name"],
+      description: live.channel["name"],
       url: url,
       input_message_content: %{
         message_text: url
