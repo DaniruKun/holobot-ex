@@ -11,8 +11,6 @@ defmodule Holobot.Application do
     validate_bot_name(bot_name)
 
     children = [
-      # Start Finch HTTP client for fetching data from Holofans API
-      {Finch, name: HolofansAPIClient},
       # Start caching server
       {Holobot.Holofans.Videos, []},
       # Start Telegram API poller

@@ -3,8 +3,6 @@ defmodule Holobot.Holofans.Channels do
   Holofans API channels context.
   """
 
-  @holofans_api_base Application.fetch_env!(:holobot, :holofans_api)
-
   @type channel :: %{
           name: binary(),
           subscriber_count: integer(),
@@ -13,7 +11,6 @@ defmodule Holobot.Holofans.Channels do
         }
 
   require Logger
-  import Finch
 
   @spec get_channels :: list(channel())
   def get_channels(filter \\ %{"sort" => "name"}) do
@@ -39,18 +36,28 @@ defmodule Holobot.Holofans.Channels do
     get_channel_resource("/v1/channels/bilibili/#{bb_id}")
   end
 
-  defp get_channel_resource(resource, params \\ %{}) do
+  defp get_channel_resource(path, params \\ %{}) do
+    holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
+
     url =
-      @holofans_api_base
+      holofans_api_base
       |> URI.parse()
-      |> URI.merge(resource)
+      |> URI.merge(path)
       |> Map.put(:query, URI.encode_query(params))
+      |> URI.to_string()
 
     Logger.debug("Making request to URL: #{url}")
 
-    req = build(:get, url)
-    {:ok, resp} = request(req, HolofansAPIClient)
-    {:ok, decoded_body} = resp.body |> Jason.decode()
-    decoded_body
+    case HTTPoison.get(url) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        {:ok, decoded} = Jason.decode(body)
+        decoded
+
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
+        Logger.warning("Resource not found")
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        Logger.error(reason)
+    end
   end
 end
