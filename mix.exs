@@ -40,7 +40,6 @@ defmodule Holobot.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:nadia, "~> 0.7.0"},
-      {:finch, "~> 0.3.1"},
       {:poison, "~> 4.0.1"},
       {:mock, "~> 0.3.6"},
       {:memento, "~> 0.3.1"},
