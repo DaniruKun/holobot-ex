@@ -17,7 +17,7 @@ defmodule Holobot.Holofans.Video do
       :is_captioned
     ],
     index: [:title, :channel],
-    type: :ordered_set
+    type: :set
 
   @spec build_record(map) :: struct()
   def build_record(video) do
@@ -29,7 +29,16 @@ defmodule Holobot.Holofans.Video do
       live_start: video["live_start"],
       live_end: video["live_end"],
       live_viewers: video["live_viewers"],
-      channel: video["channel"],
+      channel:
+        video["channel"]
+        |> Map.take([
+          "yt_channel_id",
+          "name",
+          "twitter_link",
+          "view_count",
+          "subscriber_count",
+          "video_count"
+        ]),
       is_uploaded: video["is_uploaded"],
       duration_secs: video["duration_secs"],
       is_captioned: video["is_captioned"]

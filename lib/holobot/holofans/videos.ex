@@ -15,7 +15,7 @@ defmodule Holobot.Holofans.Videos do
   @cache_update_interval 900_000
 
   def start_link(init_args \\ []) do
-    Logger.info("Started cache server")
+    Logger.info("Started Videos cache server")
     setup_tables()
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
@@ -73,10 +73,20 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of currently airing live streams.
   """
-  @spec get_live :: list(%Video{})
-  def get_live() do
+  @spec get_lives :: list(%Video{})
+  def get_lives() do
     Memento.transaction!(fn ->
       Memento.Query.select(Video, {:==, :status, "live"})
+    end)
+  end
+
+  @doc """
+  Get list of upcoming streams.
+  """
+  @spec get_upcoming :: list(%Video{})
+  def get_upcoming() do
+    Memento.transaction!(fn ->
+      Memento.Query.select(Video, {:==, :status, "upcoming"})
     end)
   end
 
