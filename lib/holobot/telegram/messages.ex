@@ -18,48 +18,6 @@ defmodule Holobot.Telegram.Messages do
   @yt_vid_url_base "https://youtu.be/"
 
   @doc """
-  Builds a formatted list of currently live streams.
-  """
-  @spec build_live_msg(list(Lives.live() | %Video{})) :: binary()
-  @deprecated "Use build_msg_for_status/2 instead"
-  def build_live_msg(lives) when is_list(lives) do
-    live_channels_body =
-      lives
-      |> Stream.map(&build_live_msg_entry/1)
-      |> Enum.join()
-
-    "🔴 *Live channels*\n\n" <> live_channels_body
-  end
-
-  @doc """
-  Builds a formatted list of upcoming live streams.
-  """
-  @spec build_upcoming_msg(list(Lives.live())) :: binary()
-  @deprecated "Use build_msg_for_status/2 instead"
-  def build_upcoming_msg(lives) when is_list(lives) do
-    upcoming_body =
-      lives
-      |> Stream.map(&build_live_msg_entry/1)
-      |> Enum.join()
-
-    "⏰ *Upcoming streams*\n\n" <> upcoming_body
-  end
-
-  @doc """
-  Builds a formatted list of ended live streams.
-  """
-  @spec build_ended_msg(list(Lives.live())) :: binary()
-  @deprecated "Use build_msg_for_status/2 instead"
-  def build_ended_msg(lives) when is_list(lives) do
-    ended_body =
-      lives
-      |> Stream.map(&build_live_msg_entry/1)
-      |> Enum.join()
-
-    "⏹ *Ended streams*\n\n" <> ended_body
-  end
-
-  @doc """
   Builds a formatted list of live streams for given status.
   """
   @spec build_msg_for_status(list(Lives.live() | %Video{}), Videos.video_status()) :: binary()
@@ -78,6 +36,20 @@ defmodule Holobot.Telegram.Messages do
       end
 
     header <> body
+  end
+
+  @doc """
+  Builds a formatted list of ended live streams.
+  """
+  @spec build_ended_msg(list(Lives.live())) :: binary()
+  @deprecated "Use build_msg_for_status/2 instead"
+  def build_ended_msg(lives) when is_list(lives) do
+    ended_body =
+      lives
+      |> Stream.map(&build_live_msg_entry/1)
+      |> Enum.join()
+
+    "⏹ *Ended streams*\n\n" <> ended_body
   end
 
   @spec build_channels_list_msg(list(Channels.channel())) :: binary()

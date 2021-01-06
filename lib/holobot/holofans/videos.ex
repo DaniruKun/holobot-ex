@@ -1,6 +1,6 @@
 defmodule Holobot.Holofans.Videos do
   @moduledoc """
-  Holofans API caching server.
+  Holofans videos caching server and client API module.
   """
   use GenServer
 
@@ -13,7 +13,9 @@ defmodule Holobot.Holofans.Videos do
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
   @cache_limit 1000
-  @cache_update_interval 450_000
+  @cache_update_interval 300_000
+
+  defdelegate get_airing, to: __MODULE__, as: :get_lives
 
   def start_link(init_args \\ []) do
     Logger.info("Started Videos cache server")
