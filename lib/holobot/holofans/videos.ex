@@ -157,7 +157,7 @@ defmodule Holobot.Holofans.Videos do
     end
   end
 
-  defp fetch_videos!(params) do
+  defp fetch_videos!(params \\ %{}) do
     holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
     path = "/v1/videos"
 
