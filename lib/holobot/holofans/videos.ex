@@ -9,8 +9,10 @@ defmodule Holobot.Holofans.Videos do
 
   alias Holobot.Holofans.Video
 
+  @type video_status() :: :new | :live | :upcoming | :past | :missing
+
   @cache_limit 1000
-  @cache_update_interval 300_000
+  @cache_update_interval 900_000
 
   def start_link(init_args \\ []) do
     Logger.info("Started cache server")
@@ -29,7 +31,8 @@ defmodule Holobot.Holofans.Videos do
   def handle_cast(:update, _state) do
     Logger.info("Handling update")
     # Do fetching from API and writing to cache
-    :ok = cache_videos!("upcoming")
+    :ok = cache_videos!(:live)
+    :ok = cache_videos!(:upcoming)
 
     Process.sleep(@cache_update_interval)
     update()
@@ -57,6 +60,26 @@ defmodule Holobot.Holofans.Videos do
     end)
   end
 
+  @doc """
+  Get list of all videos.
+  """
+  @spec get_all_videos :: list(%Video{})
+  def get_all_videos() do
+    Memento.transaction!(fn ->
+      Memento.Query.all(Video)
+    end)
+  end
+
+  @doc """
+  Get list of currently airing live streams.
+  """
+  @spec get_live :: list(%Video{})
+  def get_live() do
+    Memento.transaction!(fn ->
+      Memento.Query.select(Video, {:==, :status, "live"})
+    end)
+  end
+
   # Helpers
 
   defp setup_tables() do
@@ -65,13 +88,14 @@ defmodule Holobot.Holofans.Videos do
     Memento.Table.create!(Video)
   end
 
+  @spec cache_videos!(video_status()) :: any()
   defp cache_videos!(status) do
     # video request chunk size, <= 50
     step = 50
 
     filters = %{
       limit: step,
-      status: status
+      status: Atom.to_string(status)
     }
 
     try do
@@ -102,9 +126,7 @@ defmodule Holobot.Holofans.Videos do
           end)
         end)
 
-        Logger.info(
-          "Cached total of #{items_to_fetch} videos of status: #{String.upcase(status)}"
-        )
+        Logger.info("Cached total of #{items_to_fetch} videos of status: #{status}")
       else
         Logger.info("Nothing to cache, skipping.")
         :ok
