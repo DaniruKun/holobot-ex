@@ -83,11 +83,19 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of upcoming streams.
   """
-  @spec get_upcoming :: list(%Video{})
-  def get_upcoming() do
-    Memento.transaction!(fn ->
-      Memento.Query.select(Video, {:==, :status, "upcoming"})
-    end)
+  @spec get_upcoming(boolean()) :: list(%Video{})
+  def get_upcoming(free_chat \\ false) do
+    res =
+      Memento.transaction!(fn ->
+        Memento.Query.select(Video, {:==, :status, "upcoming"})
+      end)
+
+    if free_chat do
+      res
+    else
+      # Remove free chat streams
+      res |> Enum.filter(&is_not_free_chat?/1)
+    end
   end
 
   # Helpers
@@ -168,5 +176,10 @@ defmodule Holobot.Holofans.Videos do
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
     end
+  end
+
+  defp is_not_free_chat?(vid) do
+    res = vid.title |> String.downcase() |> String.contains?(["free", "chat"])
+    !res
   end
 end
