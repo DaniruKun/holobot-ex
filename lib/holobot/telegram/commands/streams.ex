@@ -7,6 +7,7 @@ defmodule Holobot.Telegram.Commands.Streams do
   alias Holobot.Helpers
   alias Holobot.Telegram.Messages
   alias Holobot.Holofans.Lives
+  alias Holobot.Holofans.Videos
 
   @default_msg_opts [{:parse_mode, "Markdown"}, {:disable_web_page_preview, true}]
   def streams(update) do
@@ -26,11 +27,11 @@ defmodule Holobot.Telegram.Commands.Streams do
               %{
                 callback_data: "/choose upcoming",
                 text: "Upcoming"
-              },
-              %{
-                callback_data: "/choose ended",
-                text: "Ended"
               }
+              # %{
+              #   callback_data: "/choose ended",
+              #   text: "Ended"
+              # }
             ]
           ]
         }
@@ -43,18 +44,16 @@ defmodule Holobot.Telegram.Commands.Streams do
     case update.callback_query.data do
       "/choose live" ->
         answer_callback_query(text: "Showing live streams.")
-        %{"live" => live} = Lives.get_lives!(%{"lookback_hours" => "0"})
 
-        live
-        |> Messages.build_live_msg()
+        Videos.get_lives()
+        |> Messages.build_msg_for_status(:live)
         |> send_message(@default_msg_opts)
 
       "/choose upcoming" ->
         answer_callback_query(text: "Showing upcoming streams.")
-        %{"upcoming" => upcoming} = Lives.get_lives!(%{"lookback_hours" => "0"})
 
-        upcoming
-        |> Messages.build_upcoming_msg()
+        Videos.get_upcoming()
+        |> Messages.build_msg_for_status(:upcoming)
         |> send_message(@default_msg_opts)
 
       "/choose ended" ->

@@ -3,6 +3,7 @@ defmodule MessagesTest do
   use ExUnit.Case, async: true
 
   alias Holobot.Telegram.Messages
+  alias Holobot.Holofans.Video
   alias Nadia.Model.InlineQueryResult.Article
 
   import Mock
@@ -33,6 +34,28 @@ defmodule MessagesTest do
     "yt_video_key" => "fDDyY3yq4OE"
   }
 
+  @valid_vid %Video{
+    __meta__: Memento.Table,
+    channel: %{
+      "name" => "Watson Amelia Ch. hololive-EN",
+      "subscriber_count" => 863_000,
+      "twitter_link" => "watsonameliaen",
+      "video_count" => 152,
+      "view_count" => 37_070_455,
+      "yt_channel_id" => "UCyl1z3jo3XHR1riLFKG5UAg"
+    },
+    duration_secs: nil,
+    is_captioned: false,
+    is_uploaded: false,
+    live_end: nil,
+    live_schedule: "2021-01-07T01:00:00.000Z",
+    live_start: nil,
+    live_viewers: nil,
+    status: "upcoming",
+    title: "【BIRTHDAY STREAM】CAKE + a Special Announcement",
+    yt_video_key: "_AbZB1uuVjA"
+  }
+
   @valid_chan %{
     "bb_space_id" => nil,
     "description" => "こんぺこ！こんぺこ！こんぺこー！\nホロライブ3期生の兎田ぺこら（Usada Pekora)ぺこ👯‍♀️",
@@ -48,6 +71,10 @@ defmodule MessagesTest do
     "yt_channel_id" => "UC1DCedRgGHBdm81E1llLhOQ"
   }
 
+  defp video_fixture(attrs \\ %{}) do
+    [Map.merge(@valid_vid, attrs)]
+  end
+
   defp lives_fixture(attrs \\ %{}) do
     [Enum.into(attrs, @valid_live)]
   end
@@ -58,36 +85,38 @@ defmodule MessagesTest do
 
   describe "stream messages" do
     test_with_mock(
-      "build_live_msg/1 builds a msg of live channels when stream hasn't started yet",
+      "build_msg_for_status/2 builds a msg of upcoming channels when stream hasn't started yet",
       DateTime,
       [:passthrough],
-      utc_now: fn -> ~U[2020-12-29 21:00:00.000Z] end
+      utc_now: fn -> ~U[2021-01-07 00:30:00.000Z] end
     ) do
-      # We mock a current UTC time that is one hour before scheduled start
-      lives = lives_fixture()
+      # We mock current UTC time that is 30 min before scheduled start
+      vids = video_fixture()
 
-      live_msg = Messages.build_live_msg(lives)
+      msg = Messages.build_msg_for_status(vids, :upcoming)
 
       expected_msg =
-        "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "⏰ *Upcoming streams*\n\n🔎Watson Amelia Ch. hololive-EN\nStarts in *30* minutes\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
 
-      assert expected_msg == live_msg
+      assert expected_msg == msg
     end
 
     test_with_mock(
-      "build_live_msg/1 builds a msg of live channels when stream has already started",
+      "build_msg_for_status/2 builds a msg of live channels when stream has already started for status :live",
       DateTime,
       [:passthrough],
-      utc_now: fn -> ~U[2020-12-29 22:30:00.000Z] end
+      utc_now: fn -> ~U[2021-01-07 01:30:00.000Z] end
     ) do
-      lives = lives_fixture(%{"live_start" => "2020-12-29T22:00:00.000Z"})
+      # We mock the current UTC time to be 30 min after stream start
 
-      live_msg = Messages.build_live_msg(lives)
+      vids = video_fixture(%{live_start: "2021-01-07T01:00:00.000Z"})
+
+      msg = Messages.build_msg_for_status(vids, :live)
 
       expected_msg =
-        "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "🔴 *Live channels*\n\n🔎Watson Amelia Ch. hololive-EN\nStarted *30* minutes ago\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
 
-      assert expected_msg == live_msg
+      assert expected_msg == msg
     end
   end
 

@@ -12,7 +12,7 @@ defmodule Holobot.Holofans.Videos do
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
   @cache_limit 1000
-  @cache_update_interval 900_000
+  @cache_update_interval 450_000
 
   def start_link(init_args \\ []) do
     Logger.info("Started Videos cache server")

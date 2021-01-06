@@ -11,6 +11,7 @@ defmodule Holobot.Telegram.Messages do
   alias Holobot.Helpers
   alias Holobot.Holofans.Channels
   alias Holobot.Holofans.Lives
+  alias Holobot.Holofans.Video
   alias Nadia.Model.InlineQueryResult.Article
 
   @yt_vid_url_base "https://youtu.be/"
@@ -18,7 +19,8 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Builds a formatted list of currently live streams.
   """
-  @spec build_live_msg(list(Lives.live())) :: binary()
+  @spec build_live_msg(list(Lives.live() | %Video{})) :: binary()
+  @deprecated "Use build_msg_for_status/2 instead"
   def build_live_msg(lives) when is_list(lives) do
     live_channels_body =
       lives
@@ -32,6 +34,7 @@ defmodule Holobot.Telegram.Messages do
   Builds a formatted list of upcoming live streams.
   """
   @spec build_upcoming_msg(list(Lives.live())) :: binary()
+  @deprecated "Use build_msg_for_status/2 instead"
   def build_upcoming_msg(lives) when is_list(lives) do
     upcoming_body =
       lives
@@ -45,6 +48,7 @@ defmodule Holobot.Telegram.Messages do
   Builds a formatted list of ended live streams.
   """
   @spec build_ended_msg(list(Lives.live())) :: binary()
+  @deprecated "Use build_msg_for_status/2 instead"
   def build_ended_msg(lives) when is_list(lives) do
     ended_body =
       lives
@@ -52,6 +56,27 @@ defmodule Holobot.Telegram.Messages do
       |> Enum.join()
 
     "⏹ *Ended streams*\n\n" <> ended_body
+  end
+
+  @doc """
+  Builds a formatted list of live streams for given status.
+  """
+  @spec build_msg_for_status(list(Lives.live() | %Video{}), atom()) :: binary()
+  def build_msg_for_status(videos, status) do
+    body =
+      videos
+      |> Stream.map(&build_live_msg_entry/1)
+      |> Enum.join()
+
+    header =
+      case status do
+        :live -> "🔴 *Live channels*\n\n"
+        :upcoming -> "⏰ *Upcoming streams*\n\n"
+        :ended -> "⏹ *Ended streams*\n\n"
+        _ -> ""
+      end
+
+    header <> body
   end
 
   @spec build_channels_list_msg(list(Channels.channel())) :: binary()
@@ -86,14 +111,14 @@ defmodule Holobot.Telegram.Messages do
     lives |> Enum.map(&build_live_article/1)
   end
 
-  @spec build_live_msg_entry(Lives.live()) :: binary()
+  @spec build_live_msg_entry(%Video{}) :: binary()
   defp build_live_msg_entry(live) do
     %{
-      "channel" => channel,
-      "yt_video_key" => yt,
-      "title" => title,
-      "live_schedule" => scheduled_start,
-      "live_start" => actual_start
+      :channel => channel,
+      :yt_video_key => yt,
+      :title => title,
+      :live_schedule => scheduled_start,
+      :live_start => actual_start
     } = live
 
     {:ok, datetime_start, 0} =
@@ -113,6 +138,8 @@ defmodule Holobot.Telegram.Messages do
         :lt -> "Starts in *#{trunc(DateTime.diff(datetime_start, datetime_now) / 60)}* minutes"
         :eq -> "Live now!"
       end
+
+    # TODO: Handle ended streams (when status is ended)
 
     ch_emoji = Helpers.get_channel_emoji(channel)
 
