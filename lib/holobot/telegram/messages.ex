@@ -20,7 +20,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Builds a formatted list of live streams for given status.
   """
-  @spec build_msg_for_status(list(Lives.live() | %Video{}), Videos.video_status()) :: binary()
+  @spec build_msg_for_status(list(%Video{}), Videos.video_status()) :: binary()
   def build_msg_for_status(videos, status) do
     body =
       videos
@@ -41,7 +41,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Builds a formatted list of ended live streams.
   """
-  @spec build_ended_msg(list(Lives.live())) :: binary()
+  @spec build_ended_msg(list(%Video{})) :: binary()
   @deprecated "Use build_msg_for_status/2 instead"
   def build_ended_msg(lives) when is_list(lives) do
     ended_body =

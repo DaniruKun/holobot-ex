@@ -27,13 +27,8 @@ defmodule Holobot.Holofans.Channels do
   end
 
   @spec get_channel_yt(binary) :: channel()
-  def get_channel_yt(yt_id) when is_bitstring(yt_id) do
+  def get_channel_yt(yt_id) do
     get_channel_resource("/v1/channels/youtube/#{yt_id}")
-  end
-
-  @spec get_channel_bb(binary) :: channel()
-  def get_channel_bb(bb_id) when is_bitstring(bb_id) do
-    get_channel_resource("/v1/channels/bilibili/#{bb_id}")
   end
 
   defp get_channel_resource(path, params \\ %{}) do

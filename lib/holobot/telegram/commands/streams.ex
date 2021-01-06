@@ -6,7 +6,6 @@ defmodule Holobot.Telegram.Commands.Streams do
 
   alias Holobot.Helpers
   alias Holobot.Telegram.Messages
-  alias Holobot.Holofans.Lives
   alias Holobot.Holofans.Videos
 
   @default_msg_opts [{:parse_mode, "Markdown"}, {:disable_web_page_preview, true}]
@@ -58,11 +57,8 @@ defmodule Holobot.Telegram.Commands.Streams do
 
       "/choose ended" ->
         answer_callback_query(text: "Showing ended streams.")
-        %{"ended" => ended} = Lives.get_lives!(%{"max_upcoming_hours" => "0"})
 
-        ended
-        |> Messages.build_ended_msg()
-        |> send_message(@default_msg_opts)
+        # TODO: Implement me
     end
   end
 end
