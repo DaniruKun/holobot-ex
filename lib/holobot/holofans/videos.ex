@@ -8,7 +8,6 @@ defmodule Holobot.Holofans.Videos do
   require Memento
 
   alias Holobot.Holofans.Video
-  alias Holobot.Holofans.Videos
 
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
@@ -19,7 +18,7 @@ defmodule Holobot.Holofans.Videos do
 
   def start_link(init_args \\ []) do
     Logger.info("Started Videos cache server")
-    setup_tables()
+    setup_table()
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
@@ -32,7 +31,7 @@ defmodule Holobot.Holofans.Videos do
 
   @impl true
   def handle_cast(:update, _state) do
-    Logger.info("Handling update")
+    Logger.info("Updating Videos cache")
     # Do fetching from API and writing to cache
     :ok = cache_videos!(:live)
     :ok = cache_videos!(:upcoming)
@@ -103,7 +102,7 @@ defmodule Holobot.Holofans.Videos do
 
   # Helpers
 
-  defp setup_tables() do
+  defp setup_table() do
     # Create the ETS/Mnesia tables
     Logger.info("Setting up Mnesia tables")
     Memento.Table.create!(Video)

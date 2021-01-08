@@ -1,37 +1,116 @@
 defmodule Holobot.Holofans.Channels do
   @moduledoc """
-  Holofans API channels context.
+  Holofans channels caching server and client API module.
   """
 
-  @type channel :: %{
-          name: binary(),
-          subscriber_count: integer(),
-          yt_channel_id: binary(),
-          twitter_link: binary()
-        }
+  use GenServer
+
+  require Logger
+  require Memento
+
+  alias Holobot.Holofans.Channel
 
   require Logger
 
-  @spec get_channels :: list(channel())
-  def get_channels(filter \\ %{"sort" => "name"}) do
-    get_channel_resource("/v1/channels", filter) |> Map.get("channels")
+  @cache_update_interval 3_600_000
+
+  def start_link(init_args \\ []) do
+    Logger.info("Started Channels cache server")
+    GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
-  def get_channel(holoapi_id) when is_integer(holoapi_id) do
-    get_channel(Integer.to_string(holoapi_id))
+  @impl true
+  def init(_args) do
+    # Start the update loop
+    setup_table()
+    update()
+    {:ok, :initial_state}
   end
 
-  @spec get_channel(binary) :: channel()
-  def get_channel(holoapi_id) when is_bitstring(holoapi_id) do
-    get_channel_resource("/v1/channels/#{holoapi_id}")
+  @impl true
+  def handle_cast(:update, _state) do
+    Logger.info("Updating Channels cache")
+    # Fetch and cache
+    :ok = cache_channels!()
+
+    Process.sleep(@cache_update_interval)
+
+    update()
+    {:noreply, :ok}
   end
 
-  @spec get_channel_yt(binary) :: channel()
-  def get_channel_yt(yt_id) do
-    get_channel_resource("/v1/channels/youtube/#{yt_id}")
+  # Client
+
+  def update(pid \\ __MODULE__) do
+    GenServer.cast(pid, :update)
   end
 
-  defp get_channel_resource(path, params \\ %{}) do
+  @doc """
+  Get a list of all channels.
+  """
+  @spec get_channels :: list(%Channel{})
+  def get_channels() do
+    Memento.transaction!(fn ->
+      Memento.Query.all(Channel)
+    end)
+  end
+
+  def get_channels_top_subs() do
+    get_channels() |> Enum.sort_by(&(&1.subscriber_count), :desc)
+  end
+
+  def get_channels_top_views do
+    get_channels() |> Enum.sort_by(&(&1.view_count), :desc)
+  end
+
+  # Helpers
+
+  defp cache_channels!(step \\ 50) do
+
+    filter = %{
+      sort: "name",
+      limit: step
+    }
+
+    try do
+      %{"total" => total} = fetch_channels!(filter)
+
+      if total > 0 do
+        0..total
+        |> Stream.filter(&(rem(&1, step) == 0))
+        |> Enum.each(fn offset ->
+          Logger.debug("Current offset: #{offset}")
+
+          channels_chunk =
+            filter
+            |> Map.merge(%{offset: offset})
+            |> fetch_channels!()
+            |> Map.get("channels")
+            |> Enum.map(&Channel.build_record/1)
+
+          Memento.transaction!(fn ->
+            for channel <- channels_chunk, do: Memento.Query.write(channel)
+          end)
+
+          Logger.info("Cached total of #{total} channels")
+
+        end)
+      end
+    rescue
+      RuntimeError -> "Error when caching channels!"
+    end
+  end
+
+  defp setup_table() do
+    Logger.info("Setting up Mnesia table.")
+    Memento.Table.create!(Channel)
+  end
+
+  defp fetch_channels!(filter \\ %{}) do
+    fetch_channel_resource("/v1/channels", filter)
+  end
+
+  defp fetch_channel_resource(path, params \\ %{}) do
     holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
 
     url =

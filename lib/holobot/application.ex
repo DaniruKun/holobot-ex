@@ -11,8 +11,9 @@ defmodule Holobot.Application do
     validate_bot_name(bot_name)
 
     children = [
-      # Start caching server
+      # Start caching servers
       {Holobot.Holofans.Videos, []},
+      {Holobot.Holofans.Channels, []},
       # Start Telegram API poller
       {Holobot.Telegram.Poller, []},
       # Start matcher
