@@ -55,18 +55,17 @@ defmodule Holobot.Holofans.Channels do
     end)
   end
 
-  def get_channels_top_subs() do
-    get_channels() |> Enum.sort_by(&(&1.subscriber_count), :desc)
+  def get_channels_top_subs(limit \\ 10) do
+    get_channels() |> Enum.sort_by(& &1.subscriber_count, :desc) |> Enum.take(limit)
   end
 
-  def get_channels_top_views do
-    get_channels() |> Enum.sort_by(&(&1.view_count), :desc)
+  def get_channels_top_views(limit \\ 10) do
+    get_channels() |> Enum.sort_by(& &1.view_count, :desc) |> Enum.take(limit)
   end
 
   # Helpers
 
   defp cache_channels!(step \\ 50) do
-
     filter = %{
       sort: "name",
       limit: step
@@ -93,7 +92,6 @@ defmodule Holobot.Holofans.Channels do
           end)
 
           Logger.info("Cached total of #{total} channels")
-
         end)
       end
     rescue

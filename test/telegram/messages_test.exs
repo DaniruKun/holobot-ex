@@ -4,6 +4,7 @@ defmodule MessagesTest do
 
   alias Holobot.Telegram.Messages
   alias Holobot.Holofans.Video
+  alias Holobot.Holofans.Channel
   alias Nadia.Model.InlineQueryResult.Article
 
   import Mock
@@ -30,27 +31,21 @@ defmodule MessagesTest do
     yt_video_key: "_AbZB1uuVjA"
   }
 
-  @valid_chan %{
-    "bb_space_id" => nil,
-    "description" => "こんぺこ！こんぺこ！こんぺこー！\nホロライブ3期生の兎田ぺこら（Usada Pekora)ぺこ👯‍♀️",
-    "id" => 36,
-    "name" => "Pekora Ch. 兎田ぺこら",
-    "photo" =>
-      "https://yt3.ggpht.com/ytc/AAUvwnjvkyPGzOmEXZ34mEFPlwMKTbCDl1ZkQ_HkxY-O5Q=s800-c-k-c0x00ffffff-no-rj",
-    "published_at" => "2019-07-03T06:28:25.000Z",
-    "subscriber_count" => 1_110_000,
-    "twitter_link" => "usadapekora",
-    "video_count" => 318,
-    "view_count" => 95_176_833,
-    "yt_channel_id" => "UC1DCedRgGHBdm81E1llLhOQ"
+  @valid_chan %Channel{
+    name: "Pekora Ch. 兎田ぺこら",
+    subscriber_count: 1_110_000,
+    twitter_link: "usadapekora",
+    video_count: 318,
+    view_count: 95_176_833,
+    yt_channel_id: "UC1DCedRgGHBdm81E1llLhOQ"
   }
 
   defp video_fixture(attrs \\ %{}) do
     [Map.merge(@valid_vid, attrs)]
   end
 
-  defp channels_fixture(attrs \\ %{}) do
-    [Enum.into(attrs, @valid_chan)]
+  defp channels_fixture() do
+    [@valid_chan]
   end
 
   describe "stream messages" do

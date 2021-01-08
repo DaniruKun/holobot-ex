@@ -5,10 +5,12 @@ defmodule Holobot.Helpers do
   Functions that are not strictly related to Holofans or Telegram domains.
   """
 
-  alias Holobot.Holofans.Channels
-
-  @spec get_channel_emoji(Channels.channel()) :: binary()
-  def get_channel_emoji(%{"yt_channel_id" => yt_channel_id}) do
+  @doc """
+  Get the emoji corresponding to a Hololive channel by the YT channel ID.
+  Returns empty binary if not found.
+  """
+  @spec get_channel_emoji(binary()) :: binary()
+  def get_channel_emoji(yt_channel_id) do
     channel_emoji = %{
       # 0th Generation
       "UCp6993wxpyDPHUpavwDFqgg" => "🐻",

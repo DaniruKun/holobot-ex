@@ -44,25 +44,17 @@ defmodule Holobot.Telegram.Commands.Channels do
         "/channels all" ->
           answer_callback_query(text: "Showing all channels.")
 
-          Holofans.Channels.get_channels(%{"limit" => "50", "order" => "desc"})
+          Holofans.Channels.get_channels()
 
         "/channels top-subs" ->
           answer_callback_query(text: "Showing top 10 channels by sub count.")
 
-          Holofans.Channels.get_channels(%{
-            "sort" => "subscriber_count",
-            "limit" => "10",
-            "order" => "desc"
-          })
+          Holofans.Channels.get_channels_top_subs()
 
         "/channels top-views" ->
           answer_callback_query(text: "Showing top 10 channels by view count.")
 
-          Holofans.Channels.get_channels(%{
-            "sort" => "view_count",
-            "limit" => "10",
-            "order" => "desc"
-          })
+          Holofans.Channels.get_channels_top_views()
       end
 
     channels

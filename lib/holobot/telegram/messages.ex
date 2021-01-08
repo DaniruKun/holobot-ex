@@ -9,8 +9,7 @@ defmodule Holobot.Telegram.Messages do
   require Nadia
 
   alias Holobot.Helpers
-  alias Holobot.Holofans.Channels
-  alias Holobot.Holofans.Lives
+  alias Holobot.Holofans.Channel
   alias Holobot.Holofans.Video
   alias Holobot.Holofans.Videos
   alias Nadia.Model.InlineQueryResult.Article
@@ -38,21 +37,7 @@ defmodule Holobot.Telegram.Messages do
     header <> body
   end
 
-  @doc """
-  Builds a formatted list of ended live streams.
-  """
-  @spec build_ended_msg(list(%Video{})) :: binary()
-  @deprecated "Use build_msg_for_status/2 instead"
-  def build_ended_msg(lives) when is_list(lives) do
-    ended_body =
-      lives
-      |> Stream.map(&build_live_msg_entry/1)
-      |> Enum.join()
-
-    "⏹ *Ended streams*\n\n" <> ended_body
-  end
-
-  @spec build_channels_list_msg(list(Channels.channel())) :: binary()
+  @spec build_channels_list_msg(list(%Channel{})) :: binary()
   def build_channels_list_msg(channels) do
     channels_body =
       channels
@@ -114,7 +99,7 @@ defmodule Holobot.Telegram.Messages do
 
     # TODO: Handle ended streams (when status is ended)
 
-    ch_emoji = Helpers.get_channel_emoji(channel)
+    ch_emoji = Helpers.get_channel_emoji(channel["yt_channel_id"])
 
     """
     #{ch_emoji}#{channel["name"]}
@@ -126,13 +111,13 @@ defmodule Holobot.Telegram.Messages do
 
   defp build_channel_entry(channel) do
     %{
-      "name" => name,
-      "subscriber_count" => subs,
-      "yt_channel_id" => ch_id,
-      "twitter_link" => twitter
+      name: name,
+      subscriber_count: subs,
+      yt_channel_id: ch_id,
+      twitter_link: twitter
     } = channel
 
-    ch_emoji = Helpers.get_channel_emoji(channel)
+    ch_emoji = Helpers.get_channel_emoji(ch_id)
 
     """
     #{ch_emoji}[#{name}](https://www.youtube.com/channel/#{ch_id})
