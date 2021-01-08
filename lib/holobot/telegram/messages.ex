@@ -9,64 +9,35 @@ defmodule Holobot.Telegram.Messages do
   require Nadia
 
   alias Holobot.Helpers
+  alias Holobot.Holofans.Channel
+  alias Holobot.Holofans.Video
+  alias Holobot.Holofans.Videos
   alias Nadia.Model.InlineQueryResult.Article
-
-  @type channel :: %{
-          name: binary(),
-          subscriber_count: integer(),
-          yt_channel_id: binary(),
-          twitter_link: binary()
-        }
-  @type live :: %{
-          channel: channel(),
-          yt_video_key: binary(),
-          title: binary(),
-          live_schedule: binary(),
-          live_start: binary()
-        }
 
   @yt_vid_url_base "https://youtu.be/"
 
   @doc """
-  Builds a formatted list of currently live streams.
+  Builds a formatted list of live streams for given status.
   """
-  @spec build_live_msg(list(live())) :: binary()
-  def build_live_msg(lives) when is_list(lives) do
-    live_channels_body =
-      lives
+  @spec build_msg_for_status(list(%Video{}), Videos.video_status()) :: binary()
+  def build_msg_for_status(videos, status) do
+    body =
+      videos
       |> Stream.map(&build_live_msg_entry/1)
       |> Enum.join()
 
-    "🔴 *Live channels*\n\n" <> live_channels_body
+    header =
+      case status do
+        :live -> "🔴 *Live channels*\n\n"
+        :upcoming -> "⏰ *Upcoming streams*\n\n"
+        :ended -> "⏹ *Ended streams*\n\n"
+        _ -> ""
+      end
+
+    header <> body
   end
 
-  @doc """
-  Builds a formatted list of upcoming live streams.
-  """
-  @spec build_upcoming_msg(list(live())) :: binary()
-  def build_upcoming_msg(lives) when is_list(lives) do
-    upcoming_body =
-      lives
-      |> Stream.map(&build_live_msg_entry/1)
-      |> Enum.join()
-
-    "⏰ *Upcoming streams*\n\n" <> upcoming_body
-  end
-
-  @doc """
-  Builds a formatted list of ended live streams.
-  """
-  @spec build_ended_msg(list(live())) :: binary()
-  def build_ended_msg(lives) when is_list(lives) do
-    ended_body =
-      lives
-      |> Stream.map(&build_live_msg_entry/1)
-      |> Enum.join()
-
-    "⏹ *Ended streams*\n\n" <> ended_body
-  end
-
-  @spec build_channels_list_msg(list(channel())) :: binary()
+  @spec build_channels_list_msg(list(%Channel{})) :: binary()
   def build_channels_list_msg(channels) do
     channels_body =
       channels
@@ -93,19 +64,19 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Returns a list of InlineQueryResultArticle structs.
   """
-  @spec build_live_articles_inline(list(live())) :: list(%Article{})
+  @spec build_live_articles_inline(list(%Video{})) :: list(%Article{})
   def build_live_articles_inline(lives) do
     lives |> Enum.map(&build_live_article/1)
   end
 
-  @spec build_live_msg_entry(live()) :: binary()
+  @spec build_live_msg_entry(%Video{}) :: binary()
   defp build_live_msg_entry(live) do
     %{
-      "channel" => channel,
-      "yt_video_key" => yt,
-      "title" => title,
-      "live_schedule" => scheduled_start,
-      "live_start" => actual_start
+      :channel => channel,
+      :yt_video_key => yt,
+      :title => title,
+      :live_schedule => scheduled_start,
+      :live_start => actual_start
     } = live
 
     {:ok, datetime_start, 0} =
@@ -126,7 +97,9 @@ defmodule Holobot.Telegram.Messages do
         :eq -> "Live now!"
       end
 
-    ch_emoji = Helpers.get_channel_emoji(channel)
+    # TODO: Handle ended streams (when status is ended)
+
+    ch_emoji = Helpers.get_channel_emoji(channel["yt_channel_id"])
 
     """
     #{ch_emoji}#{channel["name"]}
@@ -136,16 +109,15 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  @spec build_channel_entry(any()) :: binary()
   defp build_channel_entry(channel) do
     %{
-      "name" => name,
-      "subscriber_count" => subs,
-      "yt_channel_id" => ch_id,
-      "twitter_link" => twitter
+      name: name,
+      subscriber_count: subs,
+      yt_channel_id: ch_id,
+      twitter_link: twitter
     } = channel
 
-    ch_emoji = Helpers.get_channel_emoji(channel)
+    ch_emoji = Helpers.get_channel_emoji(ch_id)
 
     """
     #{ch_emoji}[#{name}](https://www.youtube.com/channel/#{ch_id})
@@ -155,17 +127,17 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  @spec build_live_article(live()) :: %Article{}
+  @spec build_live_article(%Video{}) :: %Article{}
   defp build_live_article(live) do
-    url = "https://www.youtu.be/#{live["yt_video_key"]}"
+    url = "https://www.youtu.be/#{live.yt_video_key}"
 
     %Article{
       id: Enum.random(1..100),
-      title: live["title"],
-      thumb_url: "https://img.youtube.com/vi/#{live["yt_video_key"]}/sddefault.jpg",
+      title: live.title,
+      thumb_url: "https://img.youtube.com/vi/#{live.yt_video_key}/sddefault.jpg",
       thumb_width: 640,
       thumb_height: 480,
-      description: live["channel"]["name"],
+      description: live.channel["name"],
       url: url,
       input_message_content: %{
         message_text: url

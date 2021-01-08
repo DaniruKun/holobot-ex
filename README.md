@@ -12,10 +12,23 @@ The current bot is registered on Telegram as [@a_chan_bot](https://t.me/a_chan_b
 
 All data is fetched from <https://api.holotools.app>
 
+## Architecture
+
+<img src="doc/architecture.jpeg" width="800">
+
 ## Features
 
-- Lookup live, upcoming and ended Hololive live streams
-- Look up Hololive channels
+### Get a list of live and upcoming streams in an instant
+
+![streams](doc/streams.gif)
+
+### Get stats on Hololive vtubers instantly
+
+![channels](doc/channels.gif)
+
+### Lookup and paste Hololive videos and channels inline (WIP)
+
+![inline](doc/inline.gif)
 
 ## Development
 
@@ -27,7 +40,7 @@ You will also need to have an active Telegram account.
 
 ### Roadmap
 
-- [ ] Cache Holofans API resources in ETS/Mnesia tables
+- [x] Cache Holofans API resources in ETS/Mnesia tables
 - [ ] Add stateful logic for Telegram users to allow for user-specific interactions
 - [ ] Add more functionality to inline queries
 - [ ] Add a worker process to automatically publish updates to a Telegram channel
@@ -44,4 +57,6 @@ Run `mix setup`, then `mix` to start the server in dev mode by default, or `iex 
 
 ## Disclaimer
 
-This project is not associated with [Hololive Production](https://en.hololive.tv/) or [Cover Corp](https://cover-corp.com/) in any way.
+This project is not officially associated with [Hololive Production](https://en.hololive.tv/) or [Cover Corp](https://cover-corp.com/) in any way and is purely a fan creation for non-commercial purposes.
+
+The [@a_chan_bot](https://t.me/a_chan_bot) bot, as well as the application is created in compliance with the [Hololive Fan Work Guidelines](https://en.hololive.tv/terms).

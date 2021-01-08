@@ -3,91 +3,85 @@ defmodule MessagesTest do
   use ExUnit.Case, async: true
 
   alias Holobot.Telegram.Messages
+  alias Holobot.Holofans.Video
+  alias Holobot.Holofans.Channel
   alias Nadia.Model.InlineQueryResult.Article
 
   import Mock
 
-  @valid_live %{
-    "bb_video_id" => nil,
-    "channel" => %{
-      "bb_space_id" => nil,
-      "id" => 199_075,
-      "name" => "Ninomae Ina'nis Ch. hololive-EN",
-      "photo" =>
-        "https://yt3.ggpht.com/ytc/AAUvwng37V0l-NwF3bu7QA4XmOP5EZFwk5zJE-78OHP9=s800-c-k-c0x00ffffff-no-rj",
-      "published_at" => "2020-07-16T06:23:05.258Z",
-      "subscriber_count" => 656_000,
-      "twitter_link" => "ninomaeinanis",
-      "video_count" => 87,
-      "view_count" => 19_773_769,
-      "yt_channel_id" => "UCMwGHR0BTZuLsmjY_NT5Pwg"
+  @valid_vid %Video{
+    __meta__: Memento.Table,
+    channel: %{
+      "name" => "Watson Amelia Ch. hololive-EN",
+      "subscriber_count" => 863_000,
+      "twitter_link" => "watsonameliaen",
+      "video_count" => 152,
+      "view_count" => 37_070_455,
+      "yt_channel_id" => "UCyl1z3jo3XHR1riLFKG5UAg"
     },
-    "id" => 78_244_855,
-    "live_end" => nil,
-    "live_schedule" => "2020-12-29T22:00:00.000Z",
-    "live_start" => nil,
-    "live_viewers" => 15_000,
-    "status" => "live",
-    "thumbnail" => nil,
-    "title" => "【Minecraft】 exPLOSION!",
-    "yt_video_key" => "fDDyY3yq4OE"
+    duration_secs: nil,
+    is_captioned: false,
+    is_uploaded: false,
+    live_end: nil,
+    live_schedule: "2021-01-07T01:00:00.000Z",
+    live_start: nil,
+    live_viewers: nil,
+    status: "upcoming",
+    title: "【BIRTHDAY STREAM】CAKE + a Special Announcement",
+    yt_video_key: "_AbZB1uuVjA"
   }
 
-  @valid_chan %{
-    "bb_space_id" => nil,
-    "description" => "こんぺこ！こんぺこ！こんぺこー！\nホロライブ3期生の兎田ぺこら（Usada Pekora)ぺこ👯‍♀️",
-    "id" => 36,
-    "name" => "Pekora Ch. 兎田ぺこら",
-    "photo" =>
-      "https://yt3.ggpht.com/ytc/AAUvwnjvkyPGzOmEXZ34mEFPlwMKTbCDl1ZkQ_HkxY-O5Q=s800-c-k-c0x00ffffff-no-rj",
-    "published_at" => "2019-07-03T06:28:25.000Z",
-    "subscriber_count" => 1_110_000,
-    "twitter_link" => "usadapekora",
-    "video_count" => 318,
-    "view_count" => 95_176_833,
-    "yt_channel_id" => "UC1DCedRgGHBdm81E1llLhOQ"
+  @valid_chan %Channel{
+    name: "Pekora Ch. 兎田ぺこら",
+    subscriber_count: 1_110_000,
+    twitter_link: "usadapekora",
+    video_count: 318,
+    view_count: 95_176_833,
+    yt_channel_id: "UC1DCedRgGHBdm81E1llLhOQ"
   }
 
-  defp lives_fixture(attrs \\ %{}) do
-    [Enum.into(attrs, @valid_live)]
+  defp video_fixture(attrs \\ %{}) do
+    [Map.merge(@valid_vid, attrs)]
   end
 
-  defp channels_fixture(attrs \\ %{}) do
-    [Enum.into(attrs, @valid_chan)]
+  defp channels_fixture() do
+    [@valid_chan]
   end
 
   describe "stream messages" do
     test_with_mock(
-      "build_live_msg/1 builds a msg of live channels when stream hasn't started yet",
+      "build_msg_for_status/2 builds a msg of upcoming channels when stream hasn't started yet",
       DateTime,
       [:passthrough],
-      utc_now: fn -> ~U[2020-12-29 21:00:00.000Z] end
+      utc_now: fn -> ~U[2021-01-07 00:30:00.000Z] end
     ) do
-      # We mock a current UTC time that is one hour before scheduled start
-      lives = lives_fixture()
+      # We mock current UTC time that is 30 min before scheduled start
+      vids = video_fixture()
 
-      live_msg = Messages.build_live_msg(lives)
+      msg = Messages.build_msg_for_status(vids, :upcoming)
 
       expected_msg =
-        "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarts in *60* minutes\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "⏰ *Upcoming streams*\n\n🔎Watson Amelia Ch. hololive-EN\nStarts in *30* minutes\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
 
-      assert expected_msg == live_msg
+      assert expected_msg == msg
     end
 
     test_with_mock(
-      "build_live_msg/1 builds a msg of live channels when stream has already started",
+      "build_msg_for_status/2 builds a msg of live channels when stream has already started for status :live",
       DateTime,
       [:passthrough],
-      utc_now: fn -> ~U[2020-12-29 22:30:00.000Z] end
+      utc_now: fn -> ~U[2021-01-07 01:30:00.000Z] end
     ) do
-      lives = lives_fixture(%{"live_start" => "2020-12-29T22:00:00.000Z"})
+      # We mock the current UTC time to be 30 min after stream start
 
-      live_msg = Messages.build_live_msg(lives)
+      vids = video_fixture(%{live_start: "2021-01-07T01:00:00.000Z"})
+
+      msg = Messages.build_msg_for_status(vids, :live)
 
       expected_msg =
-        "🔴 *Live channels*\n\n🐙Ninomae Ina'nis Ch. hololive-EN\nStarted *30* minutes ago\n[【Minecraft】 exPLOSION!](https://youtu.be/fDDyY3yq4OE)\n\n"
+        "🔴 *Live channels*\n\n🔎Watson Amelia Ch. hololive-EN\nStarted *30* minutes ago\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
 
-      assert expected_msg == live_msg
+      assert expected_msg == msg
     end
   end
 
@@ -104,27 +98,27 @@ defmodule MessagesTest do
 
       """
 
-      assert expected == Messages.build_channels_list_msg(channels)
+      assert ^expected = Messages.build_channels_list_msg(channels)
     end
   end
 
   describe "inline_articles" do
     test "build_live_articles_inline/1 returns a correct list of Articles from a list of lives" do
-      lives = lives_fixture()
+      vids = video_fixture()
 
-      articles = Messages.build_live_articles_inline(lives)
+      articles = Messages.build_live_articles_inline(vids)
 
       expected = [
         %Article{
           id: articles |> Enum.at(0) |> Map.get(:id),
-          title: "【Minecraft】 exPLOSION!",
-          thumb_url: "https://img.youtube.com/vi/fDDyY3yq4OE/sddefault.jpg",
+          title: "【BIRTHDAY STREAM】CAKE + a Special Announcement",
+          thumb_url: "https://img.youtube.com/vi/_AbZB1uuVjA/sddefault.jpg",
           thumb_width: 640,
           thumb_height: 480,
-          description: "Ninomae Ina'nis Ch. hololive-EN",
-          url: "https://www.youtu.be/fDDyY3yq4OE",
+          description: "Watson Amelia Ch. hololive-EN",
+          url: "https://www.youtu.be/_AbZB1uuVjA",
           input_message_content: %{
-            message_text: "https://www.youtu.be/fDDyY3yq4OE"
+            message_text: "https://www.youtu.be/_AbZB1uuVjA"
           }
         }
       ]

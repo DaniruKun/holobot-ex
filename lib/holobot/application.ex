@@ -11,28 +11,19 @@ defmodule Holobot.Application do
     validate_bot_name(bot_name)
 
     children = [
-      # Start Finch HTTP client for fetching data from Holofans API
-      {Finch, name: HolofansAPIClient},
+      # Start caching servers
+      {Holobot.Holofans.Videos, []},
+      {Holobot.Holofans.Channels, []},
       # Start Telegram API poller
       {Holobot.Telegram.Poller, []},
       # Start matcher
       {Holobot.Telegram.Matcher, []}
     ]
 
+    HTTPoison.start()
+
     opts = [strategy: :one_for_one, name: Holobot.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  defp setup_telegram() do
-    webhook_url = Application.fetch_env!(:holobot, :webhook_url)
-
-    Logger.debug("Setting Telegram API webhook URL to: #{webhook_url}")
-
-    Nadia.set_webhook(
-      url: webhook_url,
-      ip_address: URI.parse(webhook_url).host
-      # <> Application.fetch_env!(:nadia, :token)
-    )
   end
 
   defp validate_bot_name(bot_name) do
