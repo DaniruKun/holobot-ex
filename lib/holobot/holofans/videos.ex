@@ -77,8 +77,13 @@ defmodule Holobot.Holofans.Videos do
   """
   @spec get_lives :: list(%Video{})
   def get_lives() do
+    guards = [
+      {:==, :live_end, nil},
+      {:==, :status, "live"}
+    ]
+
     Memento.transaction!(fn ->
-      Memento.Query.select(Video, {:==, :status, "live"})
+      Memento.Query.select(Video, guards)
     end)
   end
 
@@ -87,9 +92,14 @@ defmodule Holobot.Holofans.Videos do
   """
   @spec get_upcoming(boolean()) :: list(%Video{})
   def get_upcoming(free_chat \\ false) do
+    guards = [
+      {:==, :live_start, nil},
+      {:==, :status, "upcoming"}
+    ]
+
     res =
       Memento.transaction!(fn ->
-        Memento.Query.select(Video, {:==, :status, "upcoming"})
+        Memento.Query.select(Video, guards)
       end)
 
     if free_chat do
