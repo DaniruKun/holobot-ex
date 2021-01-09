@@ -16,7 +16,7 @@ defmodule Holobot.Holofans.Video do
       :duration_secs,
       :is_captioned
     ],
-    index: [:title, :channel],
+    index: [:title],
     type: :set
 
   @spec build_record(map) :: struct()

@@ -32,6 +32,8 @@ defmodule Holobot.Holofans.Videos do
   @impl true
   def handle_cast(:update, _state) do
     Logger.info("Updating Videos cache")
+    # Clear records
+    :ok = Memento.Table.clear(Video)
     # Do fetching from API and writing to cache
     :ok = cache_videos!(:live)
     :ok = cache_videos!(:upcoming)
@@ -79,6 +81,7 @@ defmodule Holobot.Holofans.Videos do
   def get_lives() do
     guards = [
       {:==, :live_end, nil},
+      {:!=, :live_start, nil},
       {:==, :status, "live"}
     ]
 
@@ -94,7 +97,8 @@ defmodule Holobot.Holofans.Videos do
   def get_upcoming(free_chat \\ false) do
     guards = [
       {:==, :live_start, nil},
-      {:==, :status, "upcoming"}
+      {:==, :status, "upcoming"},
+      {:==, :duration_secs, nil}
     ]
 
     res =
