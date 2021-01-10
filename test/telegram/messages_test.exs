@@ -61,7 +61,7 @@ defmodule MessagesTest do
       msg = Messages.build_msg_for_status(vids, :upcoming)
 
       expected_msg =
-        "⏰ *Upcoming streams*\n\n🔎Watson Amelia Ch. hololive-EN\nStarts in *30* minutes\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
+        "⏰ *Upcoming streams*\n\n🔎Watson Amelia Ch. hololive-EN\nStarts in *30 minutes*\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
 
       assert expected_msg == msg
     end
@@ -79,21 +79,42 @@ defmodule MessagesTest do
       msg = Messages.build_msg_for_status(vids, :live)
 
       expected_msg =
-        "🔴 *Live channels*\n\n🔎Watson Amelia Ch. hololive-EN\nStarted *30* minutes ago\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
+        "🔴 *Live channels*\n\n🔎Watson Amelia Ch. hololive-EN\nStarted *30 minutes* ago\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
+
+      assert expected_msg == msg
+    end
+
+    test_with_mock(
+      "build_msg_for_status/2 builds a msg of live channels when stream has already started for status :live more than an hour ago",
+      DateTime,
+      [:passthrough],
+      utc_now: fn -> ~U[2021-01-07 02:30:00.000Z] end
+    ) do
+      vids = video_fixture(%{live_start: "2021-01-07T01:00:00.000Z"})
+
+      msg = Messages.build_msg_for_status(vids, :live)
+
+      expected_msg = """
+      🔴 *Live channels*
+
+      🔎Watson Amelia Ch. hololive-EN
+      Started *1h 30 minutes* ago
+      [【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n
+      """
 
       assert expected_msg == msg
     end
   end
 
   describe "channel messages" do
-    test "build_channel_list_msg/1 returns correct channel list message" do
+    test "build_channel_list_msg/1 returns correct channel list message when subs >= 1M" do
       channels = channels_fixture()
 
       expected = """
       *Channels*
 
       👯[Pekora Ch. 兎田ぺこら](https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ)
-      1110K Subscribers
+      1.11M Subscribers
       [Twitter](https://twitter.com/usadapekora)
 
       """
@@ -116,9 +137,9 @@ defmodule MessagesTest do
           thumb_width: 640,
           thumb_height: 480,
           description: "Watson Amelia Ch. hololive-EN",
-          url: "https://www.youtu.be/_AbZB1uuVjA",
+          url: "https://youtu.be/_AbZB1uuVjA",
           input_message_content: %{
-            message_text: "https://www.youtu.be/_AbZB1uuVjA"
+            message_text: "https://youtu.be/_AbZB1uuVjA"
           }
         }
       ]
