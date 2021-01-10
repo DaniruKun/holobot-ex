@@ -20,11 +20,11 @@ defmodule Holobot.Telegram.Commands.Streams do
           inline_keyboard: [
             [
               %{
-                callback_data: "/choose live",
+                callback_data: "/streams live",
                 text: "Live"
               },
               %{
-                callback_data: "/choose upcoming",
+                callback_data: "/streams upcoming",
                 text: "Upcoming"
               }
               # %{
@@ -38,24 +38,24 @@ defmodule Holobot.Telegram.Commands.Streams do
   end
 
   def streams_query_command(update) do
-    Logger.info("Callback Query Command /choose")
+    Logger.info("Callback Query Command /streams")
 
     case update.callback_query.data do
-      "/choose live" ->
+      "/streams live" ->
         answer_callback_query(text: "Showing live streams.")
 
         Videos.get_lives()
         |> Messages.build_msg_for_status(:live)
         |> send_message(@default_msg_opts)
 
-      "/choose upcoming" ->
+      "/streams upcoming" ->
         answer_callback_query(text: "Showing upcoming streams.")
 
         Videos.get_upcoming()
         |> Messages.build_msg_for_status(:upcoming)
         |> send_message(@default_msg_opts)
 
-      "/choose ended" ->
+      "/streams ended" ->
         answer_callback_query(text: "Showing ended streams.")
 
         # TODO: Implement me
