@@ -93,6 +93,13 @@ defmodule Holobot.Helpers do
     Map.get(channel_emoji, yt_channel_id, "")
   end
 
+  @spec table_exists?(any) :: boolean
+  def table_exists?(table) do
+    require Memento
+
+    table in Memento.system(:local_tables)
+  end
+
   @spec tokenize_msg(binary) :: [binary]
   def tokenize_msg(msg_text) when is_binary(msg_text) do
     msg_text
@@ -180,4 +187,5 @@ defmodule Holobot.Helpers do
         nil
     end
   end
+
 end

@@ -2,7 +2,7 @@ defmodule Holobot.Holofans.Videos do
   @moduledoc """
   Holofans videos caching server and client API module.
   """
-  use GenServer
+  use GenServer, shutdown: 10_000
 
   require Logger
   require Memento
@@ -125,9 +125,12 @@ defmodule Holobot.Holofans.Videos do
   # Helpers
 
   defp setup_table() do
-    # Create the ETS/Mnesia tables
-    Logger.info("Setting up Mnesia tables")
-    Memento.Table.create!(Video)
+    if !Holobot.Helpers.table_exists?(Video) do
+      # Create the ETS/Mnesia table
+      Logger.info("Setting up Mnesia table Video")
+
+      Memento.Table.create!(Video)
+    end
   end
 
   @spec cache_videos!(video_status()) :: any()
