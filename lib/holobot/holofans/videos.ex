@@ -35,8 +35,8 @@ defmodule Holobot.Holofans.Videos do
     # Clear records
     :ok = Memento.Table.clear(Video)
     # Do fetching from API and writing to cache
-    :ok = cache_videos!(:live)
-    :ok = cache_videos!(:upcoming)
+    cache_videos!(:live)
+    cache_videos!(:upcoming)
 
     Process.sleep(@cache_update_interval)
     update()
@@ -114,6 +114,14 @@ defmodule Holobot.Holofans.Videos do
     end
   end
 
+  @doc """
+  Search for a video by title. Returns a list of up to 10 results.
+  """
+  @spec search_query(binary()) :: list(%Video{})
+  def search_query(query) do
+    fetch_videos!(%{limit: 10, title: query}) |> Map.get("videos")
+  end
+
   # Helpers
 
   defp setup_table() do
@@ -163,7 +171,6 @@ defmodule Holobot.Holofans.Videos do
         Logger.info("Cached total of #{items_to_fetch} videos of status: #{status}")
       else
         Logger.info("Nothing to cache, skipping.")
-        :ok
       end
     rescue
       RuntimeError -> "Error when caching videos of status: #{status}!"
