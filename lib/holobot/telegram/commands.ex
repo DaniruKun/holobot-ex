@@ -9,6 +9,7 @@ defmodule Holobot.Telegram.Commands do
   alias Holobot.Telegram.Commands.Channels
   alias Holobot.Telegram.Commands.Other
   alias Holobot.Telegram.Commands.Inline.Live
+  alias Holobot.Telegram.Commands.Inline.Search
 
   require Logger
 
@@ -87,7 +88,7 @@ defmodule Holobot.Telegram.Commands do
   end
 
   # Rescues any unmatched inline query, by default just list live channels.
-  inline_query(Live, :live)
+  inline_query(Search, :search)
 
   # Fallback message handler.
   message(Other, :other)

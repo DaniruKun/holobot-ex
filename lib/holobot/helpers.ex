@@ -93,6 +93,13 @@ defmodule Holobot.Helpers do
     Map.get(channel_emoji, yt_channel_id, "")
   end
 
+  @spec table_exists?(any) :: boolean
+  def table_exists?(table) do
+    require Memento
+
+    table in Memento.system(:local_tables)
+  end
+
   @spec tokenize_msg(binary) :: [binary]
   def tokenize_msg(msg_text) when is_binary(msg_text) do
     msg_text
@@ -104,7 +111,7 @@ defmodule Holobot.Helpers do
   @doc """
   Parse a tokenized Telegram message sentence and generate a response.
   """
-  @spec parse(list(binary())) :: binary()
+  @spec parse(list(binary())) :: binary() | nil
   def parse(tokens) do
     # This is mostly just a placeholder dead simply NLP pipeline,
     # the idea is to possibly integrate a sophisticated cloud NLP service
@@ -121,7 +128,7 @@ defmodule Holobot.Helpers do
           define_concept(tokens)
 
         _ ->
-          "I don't know"
+          nil
       end
     end
   end
@@ -180,4 +187,5 @@ defmodule Holobot.Helpers do
         nil
     end
   end
+
 end

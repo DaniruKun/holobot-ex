@@ -58,5 +58,11 @@ defmodule HelpersTest do
 
       assert "Hololive Production is a virtual YouTuber talent agency." = Helpers.parse(tokens)
     end
+
+    test "parse/1 returns nil when unanswerable message" do
+      tokens = ["Some", "kind", "of", "message"]
+
+      assert nil == Helpers.parse(tokens)
+    end
   end
 end

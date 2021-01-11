@@ -3,7 +3,7 @@ defmodule Holobot.Holofans.Channels do
   Holofans channels caching server and client API module.
   """
 
-  use GenServer
+  use GenServer, shutdown: 10_000
 
   require Logger
   require Memento
@@ -100,8 +100,10 @@ defmodule Holobot.Holofans.Channels do
   end
 
   defp setup_table() do
-    Logger.info("Setting up Mnesia table.")
-    Memento.Table.create!(Channel)
+    if !Holobot.Helpers.table_exists?(Channel) do
+      Logger.info("Setting up Mnesia table Channel")
+      Memento.Table.create!(Channel)
+    end
   end
 
   defp fetch_channels!(filter \\ %{}) do
