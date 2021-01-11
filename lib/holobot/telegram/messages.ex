@@ -92,8 +92,8 @@ defmodule Holobot.Telegram.Messages do
 
     time_formatted =
       case DateTime.compare(datetime_now, datetime_start) do
-        :gt -> "Started *#{trunc(DateTime.diff(datetime_now, datetime_start) / 60)}* minutes ago"
-        :lt -> "Starts in *#{trunc(DateTime.diff(datetime_start, datetime_now) / 60)}* minutes"
+        :gt -> "Started *#{build_eta(DateTime.diff(datetime_now, datetime_start))}* ago"
+        :lt -> "Starts in *#{build_eta(DateTime.diff(datetime_start, datetime_now))}*"
         :eq -> "Live now!"
       end
 
@@ -121,7 +121,7 @@ defmodule Holobot.Telegram.Messages do
 
     """
     #{ch_emoji}[#{name}](https://www.youtube.com/channel/#{ch_id})
-    #{trunc(subs / 1000)}K Subscribers
+    #{build_sub_count(subs)}
     [Twitter](https://twitter.com/#{twitter})
 
     """
@@ -129,7 +129,7 @@ defmodule Holobot.Telegram.Messages do
 
   @spec build_live_article(%Video{}) :: %Article{}
   defp build_live_article(live) do
-    url = "https://www.youtu.be/#{live.yt_video_key}"
+    url = "https://youtu.be/#{live.yt_video_key}"
 
     %Article{
       id: Enum.random(1..100),
@@ -145,10 +145,37 @@ defmodule Holobot.Telegram.Messages do
     }
   end
 
-  defp zero_pad(number, amount \\ 2) do
-    number
-    |> Integer.to_string()
-    |> String.pad_leading(amount, "0")
+  @spec build_sub_count(integer) :: binary()
+  defp build_sub_count(subs) when is_integer(subs) do
+    cond do
+      subs < 1_000_000 -> "#{trunc(subs / 1000)}K Subscribers"
+      subs >= 1_000_000 -> "#{Float.floor(subs / 1_000_000, 2)}M Subscribers"
+    end
+  end
+
+  @spec build_eta(integer) :: binary()
+  defp build_eta(seconds) when is_integer(seconds) do
+    offset = NaiveDateTime.add(~N[2000-01-01 00:00:00], seconds)
+
+    cond do
+      seconds < 60 ->
+        "#{seconds} seconds"
+
+      seconds < 3_600 ->
+        "#{offset.minute} minute" <>
+          if offset.minute == 1, do: "", else: "s"
+
+      seconds < 86_400 ->
+        "#{offset.hour}h" <>
+          if offset.minute == 0,
+            do: "",
+            else:
+              " #{offset.minute} minute" <>
+                if(offset.minute == 1, do: "", else: "s")
+
+      true ->
+        "#{offset.day} days"
+    end
   end
 
   defp clean_title(title) do

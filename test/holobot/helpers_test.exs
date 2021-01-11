@@ -35,4 +35,28 @@ defmodule HelpersTest do
       assert ["how", "are", "you", "doing"] = Helpers.tokenize_msg(msg_text)
     end
   end
+
+  describe "parser" do
+    test "parse/1 returns a greeting when a greeting is given" do
+      tokens = ["hello", "a-chan"]
+
+      response = Helpers.parse(tokens)
+
+      assert response in ["Hello!", "How you doing?", "Hey!"]
+    end
+
+    test "parse/1 correctly answers: Who is YAGOO?" do
+      tokens = ["who", "is", "yagoo"]
+
+      response = Helpers.parse(tokens)
+
+      assert response =~ "YAGOO (Motoaki Tanigo) is the CEO of COVER Corp"
+    end
+
+    test "parse/1 correctly answers: What is Hololive?" do
+      tokens = ["what", "is", "hololive"]
+
+      assert "Hololive Production is a virtual YouTuber talent agency." = Helpers.parse(tokens)
+    end
+  end
 end
