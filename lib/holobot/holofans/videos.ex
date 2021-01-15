@@ -140,7 +140,9 @@ defmodule Holobot.Holofans.Videos do
 
     filters = %{
       limit: step,
-      status: Atom.to_string(status)
+      status: Atom.to_string(status),
+      order: "asc",
+      sort: "live_schedule"
     }
 
     try do
