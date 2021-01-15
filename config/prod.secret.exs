@@ -7,7 +7,7 @@ use Mix.Config
 telegram_token =
   System.get_env("TELEGRAM_TOKEN") ||
     raise """
-    environment variable SECRET_KEY_BASE is missing.
+    environment variable TELEGRAM_TOKEN is missing.
     """
 
 config :holobot,

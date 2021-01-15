@@ -7,10 +7,6 @@
 # General application configuration
 import Config
 
-System.get_env("TELEGRAM_TOKEN") ||
-    raise """
-    Environment variable TELEGRAM_TOKEN not set.
-    """
 
 config :holobot,
   http: [port: {:system, "PORT"}],
