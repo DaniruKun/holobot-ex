@@ -20,7 +20,7 @@ defmodule Holobot.Holofans.Channel do
     %__MODULE__{
       yt_channel_id: channel["yt_channel_id"],
       name: channel["name"],
-      description: channel["description"],
+      description: channel["description"] |> String.split("\n") |> Enum.at(0),
       twitter_link: channel["twitter_link"],
       view_count: channel["view_count"],
       subscriber_count: channel["subscriber_count"],

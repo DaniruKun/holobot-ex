@@ -7,7 +7,6 @@
 # General application configuration
 import Config
 
-
 config :holobot,
   http: [port: {:system, "PORT"}],
   bot_name: "a_chan_bot",
