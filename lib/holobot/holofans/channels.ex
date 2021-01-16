@@ -55,12 +55,21 @@ defmodule Holobot.Holofans.Channels do
     end)
   end
 
+  @spec get_channels_top_subs(integer) :: [any]
   def get_channels_top_subs(limit \\ 10) do
     get_channels() |> Enum.sort_by(& &1.subscriber_count, :desc) |> Enum.take(limit)
   end
 
+  @spec get_channels_top_views(integer) :: [any]
   def get_channels_top_views(limit \\ 10) do
     get_channels() |> Enum.sort_by(& &1.view_count, :desc) |> Enum.take(limit)
+  end
+
+  @spec search(any, any) :: Stream.t()
+  def search(channels, query \\ "") do
+    Stream.filter(channels, fn channel ->
+      String.contains?(channel.name |> String.downcase(), query)
+    end)
   end
 
   # Helpers
