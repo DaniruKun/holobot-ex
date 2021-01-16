@@ -140,7 +140,7 @@ defmodule Holobot.Telegram.Messages do
     url = "https://youtu.be/#{live.yt_video_key}"
 
     %Article{
-      id: Enum.random(1..100),
+      id: live.yt_video_key,
       title: live.title,
       thumb_url: "https://img.youtube.com/vi/#{live.yt_video_key}/sddefault.jpg",
       thumb_width: 640,
@@ -158,7 +158,7 @@ defmodule Holobot.Telegram.Messages do
     url = "https://www.youtube.com/channel/#{channel.yt_channel_id}"
 
     %Article{
-      id: Enum.random(1..1000),
+      id: channel.yt_channel_id,
       title: channel.name,
       thumb_url: channel.photo,
       thumb_width: 600,

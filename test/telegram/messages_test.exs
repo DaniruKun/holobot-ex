@@ -133,7 +133,7 @@ defmodule MessagesTest do
 
       expected = [
         %Article{
-          id: articles |> Enum.at(0) |> Map.get(:id),
+          id: "_AbZB1uuVjA",
           title: "【BIRTHDAY STREAM】CAKE + a Special Announcement",
           thumb_url: "https://img.youtube.com/vi/_AbZB1uuVjA/sddefault.jpg",
           thumb_width: 640,
@@ -156,7 +156,7 @@ defmodule MessagesTest do
 
       expected = [
         %Article{
-          id: articles |> Enum.at(0) |> Map.get(:id),
+          id: "UC1DCedRgGHBdm81E1llLhOQ",
           title: "Pekora Ch. 兎田ぺこら",
           thumb_url: "https://yt3.ggpht.com/ytc/photo-id",
           thumb_width: 600,
