@@ -9,6 +9,7 @@ defmodule Holobot.Telegram.Commands do
   alias Holobot.Telegram.Commands.Channels
   alias Holobot.Telegram.Commands.Other
   alias Holobot.Telegram.Commands.Inline.Live
+  alias Holobot.Telegram.Commands.Inline.Channels, as: InlineChannels
   alias Holobot.Telegram.Commands.Inline.Search
 
   require Logger
@@ -51,6 +52,8 @@ defmodule Holobot.Telegram.Commands do
 
   inline_query_command("live", Live, :live)
 
+  inline_query_command("channels", InlineChannels, :channels)
+
   # Advanced Stuff
   #
   # Now that you already know basically how this boilerplate works let me
@@ -87,7 +90,7 @@ defmodule Holobot.Telegram.Commands do
     # answer_callback_query(text: "Sorry, but there is no JoJo better than Joseph.")
   end
 
-  # Rescues any unmatched inline query, by default just list live channels.
+  # Rescues any unmatched inline query, will perform query search across Holofans API.
   inline_query(Search, :search)
 
   # Fallback message handler.

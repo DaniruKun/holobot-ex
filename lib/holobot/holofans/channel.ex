@@ -6,10 +6,12 @@ defmodule Holobot.Holofans.Channel do
     attributes: [
       :yt_channel_id,
       :name,
+      :description,
       :twitter_link,
       :view_count,
       :subscriber_count,
-      :video_count
+      :video_count,
+      :photo
     ],
     index: [:name],
     type: :set
@@ -18,10 +20,12 @@ defmodule Holobot.Holofans.Channel do
     %__MODULE__{
       yt_channel_id: channel["yt_channel_id"],
       name: channel["name"],
+      description: channel["description"] |> String.split("\n") |> Enum.at(0),
       twitter_link: channel["twitter_link"],
       view_count: channel["view_count"],
       subscriber_count: channel["subscriber_count"],
-      video_count: channel["video_count"]
+      video_count: channel["video_count"],
+      photo: channel["photo"]
     }
   end
 end

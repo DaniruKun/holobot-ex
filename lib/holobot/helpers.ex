@@ -187,5 +187,4 @@ defmodule Holobot.Helpers do
         nil
     end
   end
-
 end
