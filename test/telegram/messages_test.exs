@@ -165,12 +165,14 @@ defmodule MessagesTest do
           url: "https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ",
           input_message_content: %{
             message_text: """
-            *Pekora Ch. 兎田ぺこら*
-            [Youtube](https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ)
+            <b>Pekora Ch. 兎田ぺこら</b>
+            <a href="https://yt3.ggpht.com/ytc/photo-id">Photo</a>
+
+            <a href="https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ">Youtube</a> <a href="https://twitter.com/usadapekora">Twitter</a>
 
             Konpeko konpeko konpekooo
             """,
-            parse_mode: "Markdown",
+            parse_mode: "HTML"
           }
         }
       ]
