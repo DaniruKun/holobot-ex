@@ -33,11 +33,13 @@ defmodule MessagesTest do
 
   @valid_chan %Channel{
     name: "Pekora Ch. 兎田ぺこら",
+    description: "Konpeko konpeko konpekooo",
     subscriber_count: 1_110_000,
     twitter_link: "usadapekora",
     video_count: 318,
     view_count: 95_176_833,
-    yt_channel_id: "UC1DCedRgGHBdm81E1llLhOQ"
+    yt_channel_id: "UC1DCedRgGHBdm81E1llLhOQ",
+    photo: "https://yt3.ggpht.com/ytc/photo-id"
   }
 
   defp video_fixture(attrs \\ %{}) do
@@ -140,6 +142,35 @@ defmodule MessagesTest do
           url: "https://youtu.be/_AbZB1uuVjA",
           input_message_content: %{
             message_text: "https://youtu.be/_AbZB1uuVjA"
+          }
+        }
+      ]
+
+      assert ^expected = articles
+    end
+
+    test "build_chanel_articles_inline returns a correct list of Articles from a list of channels" do
+      channels = channels_fixture()
+
+      articles = Messages.build_channel_articles_inline(channels)
+
+      expected = [
+        %Article{
+          id: articles |> Enum.at(0) |> Map.get(:id),
+          title: "Pekora Ch. 兎田ぺこら",
+          thumb_url: "https://yt3.ggpht.com/ytc/photo-id",
+          thumb_width: 600,
+          thumb_height: 600,
+          description: "1.11M Subscribers",
+          url: "https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ",
+          input_message_content: %{
+            message_text: """
+            *Pekora Ch. 兎田ぺこら*
+            [Youtube](https://www.youtube.com/channel/UC1DCedRgGHBdm81E1llLhOQ)
+
+            Konpeko konpeko konpekooo
+            """,
+            parse_mode: "Markdown",
           }
         }
       ]

@@ -62,11 +62,19 @@ defmodule Holobot.Telegram.Messages do
   end
 
   @doc """
-  Returns a list of InlineQueryResultArticle structs.
+  Returns a list of InlineQueryResultArticle structs with video info.
   """
   @spec build_live_articles_inline(list(%Video{})) :: list(%Article{})
   def build_live_articles_inline(lives) do
     lives |> Enum.map(&build_live_article/1)
+  end
+
+  @doc """
+  Returns a list of InlineQueryResultArticle structs with channel info.
+  """
+  @spec build_channel_articles_inline(Enumerable.t()) :: [%Article{}]
+  def build_channel_articles_inline(channels) do
+    channels |> Enum.map(&build_channel_article/1)
   end
 
   @spec build_live_msg_entry(%Video{}) :: binary()
@@ -141,6 +149,30 @@ defmodule Holobot.Telegram.Messages do
       url: url,
       input_message_content: %{
         message_text: url
+      }
+    }
+  end
+
+  @spec build_channel_article(%Channel{}) :: %Article{}
+  defp build_channel_article(channel) do
+    url = "https://www.youtube.com/channel/#{channel.yt_channel_id}"
+
+    %Article{
+      id: Enum.random(1..1000),
+      title: channel.name,
+      thumb_url: channel.photo,
+      thumb_width: 600,
+      thumb_height: 600,
+      description: build_sub_count(channel.subscriber_count),
+      url: url,
+      input_message_content: %{
+        message_text: """
+        *#{channel.name}*
+        [Youtube](#{url})
+
+        #{channel.description}
+        """,
+        parse_mode: "Markdown"
       }
     }
   end
