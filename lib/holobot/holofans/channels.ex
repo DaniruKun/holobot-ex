@@ -21,29 +21,25 @@ defmodule Holobot.Holofans.Channels do
 
   @impl true
   def init(_args) do
-    # Start the update loop
+    # Setup Mnesia table
     setup_table()
-    update()
-    {:ok, :initial_state}
+    # Perform initial cache
+    send(self(), :update)
+    # Start the update timed interval polling
+    :timer.send_interval(@cache_update_interval, :update)
+    {:ok, %{}}
   end
 
   @impl true
-  def handle_cast(:update, _state) do
+  def handle_info(:update, _state) do
     Logger.info("Updating Channels cache")
     # Fetch and cache
     :ok = cache_channels!()
 
-    Process.sleep(@cache_update_interval)
-
-    update()
-    {:noreply, :ok}
+    {:noreply, :state}
   end
 
   # Client
-
-  def update(pid \\ __MODULE__) do
-    GenServer.cast(pid, :update)
-  end
 
   @doc """
   Get a list of all channels.
