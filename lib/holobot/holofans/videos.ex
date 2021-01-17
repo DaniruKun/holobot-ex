@@ -14,23 +14,27 @@ defmodule Holobot.Holofans.Videos do
   @cache_limit 1000
   @cache_update_interval 300_000
 
+  @spec get_airing :: [Holobot.Holofans.Video.t()]
   defdelegate get_airing, to: __MODULE__, as: :get_lives
 
   def start_link(init_args \\ []) do
     Logger.info("Started Videos cache server")
-    setup_table()
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
   @impl true
   def init(_args) do
-    # Start the update loop
-    update()
-    {:ok, :initial_state}
+    # Setup Mnesia table
+    setup_table()
+    # Perform initial cache
+    send(self(), :update)
+    # Start the update timed interval polling
+    :timer.send_interval(@cache_update_interval, :update)
+    {:ok, %{}}
   end
 
   @impl true
-  def handle_cast(:update, _state) do
+  def handle_info(:update, _state) do
     Logger.info("Updating Videos cache")
     # Clear records
     :ok = Memento.Table.clear(Video)
@@ -38,21 +42,10 @@ defmodule Holobot.Holofans.Videos do
     cache_videos!(:live)
     cache_videos!(:upcoming)
 
-    Process.sleep(@cache_update_interval)
-    update()
-
-    {:noreply, :ok}
+    {:noreply, %{}}
   end
 
   # Client
-
-  @doc """
-  Update the cache state.
-  """
-  @spec update(atom | pid | {atom, any} | {:via, atom, any}) :: :ok
-  def update(pid \\ __MODULE__) do
-    GenServer.cast(pid, :update)
-  end
 
   @doc """
   Get a video by its Youtube video ID
