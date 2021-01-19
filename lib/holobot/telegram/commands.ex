@@ -7,6 +7,7 @@ defmodule Holobot.Telegram.Commands do
 
   alias Holobot.Telegram.Commands.Streams
   alias Holobot.Telegram.Commands.Channels
+  alias Holobot.Telegram.Commands.Ask
   alias Holobot.Telegram.Commands.Other
   alias Holobot.Telegram.Commands.Inline.Live
   alias Holobot.Telegram.Commands.Inline.Channels, as: InlineChannels
@@ -33,6 +34,10 @@ defmodule Holobot.Telegram.Commands do
   command("channels", Channels, :channels)
 
   callback_query_command("channels", Channels, :channels_query_command)
+
+  command("ask", Ask, :ask)
+
+  callback_query_command("ask", Ask, :ask_query_command)
 
   command("commands") do
     available_commands = """
