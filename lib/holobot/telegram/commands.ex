@@ -43,13 +43,16 @@ defmodule Holobot.Telegram.Commands do
     available_commands = """
     List of available commands:
 
-    /start - Starts the bot
-    /help - Get info about A-Chan
     /streams - Get a list of live streams interactively
     /channels - Get a list of channels interactively
     /commands - Shows this list of commands
+    /ask - Ask A-Chan a common question about Hololive
+    /start - Starts the bot
+    /help - Get info about A-Chan
 
     You can make inline queries by typing @a_chan_bot query/command
+
+    E.g. to search by channels, type @a_chan_bot /channels query
     """
 
     send_message(available_commands)

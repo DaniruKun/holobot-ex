@@ -63,9 +63,11 @@ defmodule Holobot.Telegram.Commands.Ask do
 
       "/ask why-digital-avatars" ->
         send_message(
-          "Various reasons. It's fun, it's unique, and it provides a degree of anonymity.
+         """
+         Various reasons. It's fun, it's unique, and it provides a degree of anonymity.
          It's also to showcase how technology has advanced over recent years.
-         The idea of being a cartoon character in real-time was essentially unheard of even five years ago."
+         The idea of being a cartoon character in real-time was essentially unheard of even five years ago.
+         """
         )
     end
   end
