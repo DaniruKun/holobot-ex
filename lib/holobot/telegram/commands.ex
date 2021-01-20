@@ -5,13 +5,8 @@ defmodule Holobot.Telegram.Commands do
   use Holobot.Telegram.Commander
   use Holobot.Telegram.Router
 
-  alias Holobot.Telegram.Commands.Streams
-  alias Holobot.Telegram.Commands.Channels
-  alias Holobot.Telegram.Commands.Ask
-  alias Holobot.Telegram.Commands.Other
-  alias Holobot.Telegram.Commands.Inline.Live
-  alias Holobot.Telegram.Commands.Inline.Channels, as: InlineChannels
-  alias Holobot.Telegram.Commands.Inline.Search
+  alias Holobot.Telegram.Commands
+  alias Holobot.Telegram.Commands.Inline
 
   require Logger
 
@@ -27,17 +22,17 @@ defmodule Holobot.Telegram.Commands do
     send_message(Holobot.Telegram.Messages.build_help_msg(), [{:parse_mode, "Markdown"}])
   end
 
-  command("streams", Streams, :streams)
+  command("streams", Commands.Streams, :streams)
 
-  callback_query_command("streams", Streams, :streams_query_command)
+  callback_query_command("streams", Commands.Streams, :streams_query_command)
 
-  command("channels", Channels, :channels)
+  command("channels", Commands.Channels, :channels)
 
-  callback_query_command("channels", Channels, :channels_query_command)
+  callback_query_command("channels", Commands.Channels, :channels_query_command)
 
-  command("ask", Ask, :ask)
+  command("ask", Commands.Ask, :ask)
 
-  callback_query_command("ask", Ask, :ask_query_command)
+  callback_query_command("ask", Commands.Ask, :ask_query_command)
 
   command("commands") do
     available_commands = """
@@ -58,9 +53,9 @@ defmodule Holobot.Telegram.Commands do
     send_message(available_commands)
   end
 
-  inline_query_command("live", Live, :live)
+  inline_query_command("live", Inline.Live, :live)
 
-  inline_query_command("channels", InlineChannels, :channels)
+  inline_query_command("channels", Inline.Channels, :channels)
 
   # Advanced Stuff
   #
@@ -99,8 +94,8 @@ defmodule Holobot.Telegram.Commands do
   end
 
   # Rescues any unmatched inline query, will perform query search across Holofans API.
-  inline_query(Search, :search)
+  inline_query(Inline.Search, :search)
 
   # Fallback message handler.
-  message(Other, :other)
+  message(Commands.Other, :other)
 end
