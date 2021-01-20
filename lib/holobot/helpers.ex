@@ -5,6 +5,9 @@ defmodule Holobot.Helpers do
   Functions that are not strictly related to Holofans or Telegram domains.
   """
 
+  @spec tokenize(binary) :: [binary]
+  defdelegate tokenize(text), to: __MODULE__, as: :tokenize_msg
+
   @doc """
   Get the emoji corresponding to a Hololive channel by the YT channel ID.
   Returns empty binary if not found.
@@ -79,6 +82,9 @@ defmodule Holobot.Helpers do
     Map.get(channel_emoji, yt_channel_id, "")
   end
 
+  @doc """
+  Checks if a given Mnesia table exists.
+  """
   @spec table_exists?(any) :: boolean
   def table_exists?(table) do
     require Memento
@@ -86,8 +92,11 @@ defmodule Holobot.Helpers do
     table in Memento.system(:local_tables)
   end
 
+  @doc """
+  Splits and cleans a message binary into lowercase, non-punctuated tokens.
+  """
   @spec tokenize_msg(binary) :: [binary]
-  def tokenize_msg(msg_text) when is_binary(msg_text) do
+  def tokenize_msg(msg_text) when is_binary(msg_text) or is_bitstring(msg_text) do
     msg_text
     |> String.replace(~r/[[:punct:]]/, "")
     |> String.downcase()
