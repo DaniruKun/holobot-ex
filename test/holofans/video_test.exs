@@ -6,14 +6,7 @@ defmodule Holobot.Holofans.VideoTest do
 
   test "build_record/1 returns a correctly built Video struct" do
     expected = %Video{
-      channel: %{
-        "name" => "Watson Amelia Ch. hololive-EN",
-        "subscriber_count" => 863_000,
-        "twitter_link" => "watsonameliaen",
-        "video_count" => 152,
-        "view_count" => 37_070_455,
-        "yt_channel_id" => "UCyl1z3jo3XHR1riLFKG5UAg"
-      },
+      channel: "UCyl1z3jo3XHR1riLFKG5UAg",
       duration_secs: nil,
       is_captioned: false,
       is_uploaded: false,

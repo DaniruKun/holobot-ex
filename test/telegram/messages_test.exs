@@ -5,20 +5,14 @@ defmodule MessagesTest do
   alias Holobot.Telegram.Messages
   alias Holobot.Holofans.Video
   alias Holobot.Holofans.Channel
+  alias Holobot.Holofans.Channels
   alias Nadia.Model.InlineQueryResult.Article
 
   import Mock
 
   @valid_vid %Video{
     __meta__: Memento.Table,
-    channel: %{
-      "name" => "Watson Amelia Ch. hololive-EN",
-      "subscriber_count" => 863_000,
-      "twitter_link" => "watsonameliaen",
-      "video_count" => 152,
-      "view_count" => 37_070_455,
-      "yt_channel_id" => "UCyl1z3jo3XHR1riLFKG5UAg"
-    },
+    channel: "UCyl1z3jo3XHR1riLFKG5UAg",
     duration_secs: nil,
     is_captioned: false,
     is_uploaded: false,
@@ -50,6 +44,18 @@ defmodule MessagesTest do
     [@valid_chan]
   end
 
+  setup_with_mocks([
+    {Channels, [],
+     [
+       get_channel: fn "UCyl1z3jo3XHR1riLFKG5UAg" ->
+         %Channel{name: "Watson Amelia Ch. hololive-EN"}
+       end
+     ]}
+  ]) do
+    foo = "bar"
+    {:ok, foo: foo}
+  end
+
   describe "stream messages" do
     test_with_mock(
       "build_msg_for_status/2 builds a msg of upcoming channels when stream hasn't started yet",
@@ -62,8 +68,14 @@ defmodule MessagesTest do
 
       msg = Messages.build_msg_for_status(vids, :upcoming)
 
-      expected_msg =
-        "⏰ *Upcoming streams*\n\n🔎Watson Amelia Ch. hololive-EN\nStarts in *30 minutes*\n[【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)\n\n"
+      expected_msg = """
+      ⏰ *Upcoming streams*
+
+      🔎Watson Amelia Ch. hololive-EN
+      Starts in *30 minutes*
+      [【BIRTHDAY STREAM】CAKE + a Special Announcement](https://youtu.be/_AbZB1uuVjA)
+
+      """
 
       assert expected_msg == msg
     end
@@ -76,7 +88,11 @@ defmodule MessagesTest do
     ) do
       # We mock the current UTC time to be 30 min after stream start
 
-      vids = video_fixture(%{live_start: "2021-01-07T01:00:00.000Z"})
+      vids =
+        video_fixture(%{
+          live_start: "2021-01-07T01:00:00.000Z",
+          name: "Watson Amelia Ch. hololive-EN"
+        })
 
       msg = Messages.build_msg_for_status(vids, :live)
 
