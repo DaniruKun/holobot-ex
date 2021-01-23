@@ -10,6 +10,7 @@ defmodule Holobot.Telegram.Messages do
 
   alias Holobot.Helpers
   alias Holobot.Holofans.Channel
+  alias Holobot.Holofans.Channels
   alias Holobot.Holofans.Video
   alias Holobot.Holofans.Videos
   alias Nadia.Model.InlineQueryResult.Article
@@ -80,7 +81,7 @@ defmodule Holobot.Telegram.Messages do
   @spec build_live_msg_entry(%Video{}) :: binary()
   defp build_live_msg_entry(live) do
     %{
-      :channel => channel,
+      :channel => yt_channel_id,
       :yt_video_key => yt,
       :title => title,
       :live_schedule => scheduled_start,
@@ -107,10 +108,14 @@ defmodule Holobot.Telegram.Messages do
 
     # TODO: Handle ended streams (when status is ended)
 
-    ch_emoji = Helpers.get_channel_emoji(channel["yt_channel_id"])
+    ch_emoji = Helpers.get_channel_emoji(yt_channel_id)
+
+    channel = Channels.get_channel(yt_channel_id)
+
+    if !channel, do: throw(:channel_not_found)
 
     """
-    #{ch_emoji}#{channel["name"]}
+    #{ch_emoji}#{channel.name}
     #{time_formatted}
     [#{clean_title(title)}](#{@yt_vid_url_base}#{yt})
 
@@ -145,7 +150,7 @@ defmodule Holobot.Telegram.Messages do
       thumb_url: "https://img.youtube.com/vi/#{live.yt_video_key}/sddefault.jpg",
       thumb_width: 640,
       thumb_height: 480,
-      description: live.channel["name"],
+      description: live.channel |> Channels.get_channel() |> Map.get(:name),
       url: url,
       input_message_content: %{
         message_text: url
