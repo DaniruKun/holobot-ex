@@ -22,15 +22,19 @@ defmodule Holobot.Telegram.Commands.Streams do
               %{
                 callback_data: "/streams live",
                 text: "Live"
-              },
+              }
+            ],
+            [
               %{
                 callback_data: "/streams upcoming",
                 text: "Upcoming"
               }
-              # %{
-              #   callback_data: "/choose ended",
-              #   text: "Ended"
-              # }
+            ],
+            [
+              %{
+                callback_data: "/streams freechat",
+                text: "Free Chat"
+              }
             ]
           ]
         }
@@ -55,10 +59,20 @@ defmodule Holobot.Telegram.Commands.Streams do
         |> Messages.build_msg_for_status(:upcoming)
         |> send_message(@default_msg_opts)
 
+      "/streams freechat" ->
+        answer_callback_query(text: "Showing Free Chat streams only.")
+
+        Videos.get_free_chats()
+        |> Messages.build_msg_for_status(:upcoming)
+        |> send_message(@default_msg_opts)
+
       "/streams ended" ->
         answer_callback_query(text: "Showing ended streams.")
 
-        # TODO: Implement me
+      # TODO: Implement me
+
+      _ ->
+        answer_callback_query(text: "Sorry, I don't know how to respond to that!")
     end
   end
 end
