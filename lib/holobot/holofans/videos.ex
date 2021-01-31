@@ -86,25 +86,35 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of upcoming streams.
   """
-  @spec get_upcoming(boolean()) :: list(%Video{})
-  def get_upcoming(free_chat \\ false) do
+  @spec get_upcoming() :: list(%Video{})
+  def get_upcoming() do
     guards = [
       {:==, :live_start, nil},
       {:==, :status, "upcoming"},
       {:==, :duration_secs, nil}
     ]
 
-    res =
-      Memento.transaction!(fn ->
-        Memento.Query.select(Video, guards)
-      end)
+    Memento.transaction!(fn ->
+      Memento.Query.select(Video, guards)
+    end)
+    |> Enum.filter(&is_not_free_chat?/1)
+  end
 
-    if free_chat do
-      res
-    else
-      # Remove free chat streams
-      res |> Enum.filter(&is_not_free_chat?/1)
-    end
+  @doc """
+  Get list of only free chat streams.
+  """
+  @spec get_free_chats :: [%Video{}]
+  def get_free_chats() do
+    guards = [
+      {:==, :live_start, nil},
+      {:==, :status, "upcoming"},
+      {:==, :duration_secs, nil}
+    ]
+
+    Memento.transaction!(fn ->
+      Memento.Query.select(Video, guards)
+    end)
+    |> Enum.filter(&is_free_chat?/1)
   end
 
   @doc """
@@ -200,7 +210,10 @@ defmodule Holobot.Holofans.Videos do
   end
 
   defp is_not_free_chat?(vid) do
-    res = vid.title |> String.downcase() |> String.contains?(["free", "chat"])
-    !res
+    !is_free_chat?(vid)
+  end
+
+  defp is_free_chat?(vid) do
+    vid.title |> String.downcase() |> String.contains?(["free", "chat"])
   end
 end
