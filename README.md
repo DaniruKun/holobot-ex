@@ -2,6 +2,8 @@
 
 ![Elixir CI](https://github.com/DaniruKun/holobot-tg/workflows/Elixir%20CI/badge.svg)
 
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 <img src="https://static.miraheze.org/hololivewiki/thumb/8/8a/Illustrator_Artwork_-_A-Chan_01.jpg/301px-Illustrator_Artwork_-_A-Chan_01.jpg" alt="A-Chan" width="200"/>
 
 _Original art by [@ordan](https://twitter.com/ordan)_
@@ -42,13 +44,18 @@ You will also need to have an active Telegram account.
 
 - [x] Cache Holofans API resources in ETS/Mnesia tables
 - [ ] Add stateful logic for Telegram users to allow for user-specific interactions
-- [ ] Add more functionality to inline queries
-- [ ] Add a worker process to automatically publish updates to a Telegram channel
+- [x] Add more functionality to inline queries
 - [ ] Improve chatbot-like NLP (maybe utilize some public cloud ML service)
 
 ## Run
 
 Run `mix setup`, then `mix` to start the server in dev mode by default, or `iex -S mix` to start with an active IEX shell.
+
+## Support
+
+You are welcome to support me and my work on Ko-Fi
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I3I61NHVO)
 
 ## License
 
