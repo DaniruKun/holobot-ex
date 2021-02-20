@@ -15,7 +15,7 @@ defmodule Holobot.Application do
       {Holobot.Holofans.Videos, []},
       {Holobot.Holofans.Channels, []},
       # Start Telegram API poller
-      #      {Holobot.Telegram.Poller, []},
+      {Holobot.Telegram.Poller, []},
       # Start matcher
       {Holobot.Telegram.Matcher, []}
     ]
