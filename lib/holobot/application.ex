@@ -6,7 +6,7 @@ defmodule Holobot.Application do
   use Application
 
   def start(_type, _args) do
-    bot_name = Application.get_env(:holobot, :bot_name)
+    bot_name = Application.fetch_env!(:holobot, :bot_name)
 
     validate_bot_name(bot_name)
 
@@ -15,7 +15,7 @@ defmodule Holobot.Application do
       {Holobot.Holofans.Videos, []},
       {Holobot.Holofans.Channels, []},
       # Start Telegram API poller
-      {Holobot.Telegram.Poller, []},
+      #      {Holobot.Telegram.Poller, []},
       # Start matcher
       {Holobot.Telegram.Matcher, []}
     ]

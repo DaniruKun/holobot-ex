@@ -8,6 +8,7 @@ defmodule Holobot.Holofans.Videos do
   require Memento
 
   alias Holobot.Holofans.Video
+  alias Holobot.Helpers
 
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
@@ -172,7 +173,15 @@ defmodule Holobot.Holofans.Videos do
             |> Enum.map(&Video.build_record/1)
 
           Memento.transaction!(fn ->
-            for video <- videos_chunk, do: Memento.Query.write(video)
+            for video <- videos_chunk do
+              prev_video = Memento.Query.read(Video, video.yt_video_key)
+
+              if prev_video && is_golive?(prev_video, video) do
+                Helpers.send_golive_push(video)
+              end
+
+              Memento.Query.write(video)
+            end
           end)
         end)
 
@@ -215,5 +224,9 @@ defmodule Holobot.Holofans.Videos do
 
   defp is_free_chat?(vid) do
     vid.title |> String.downcase() |> String.contains?(["free", "chat"])
+  end
+
+  defp is_golive?(prev, next) do
+    prev.status in ["upcoming", "new"] && next.status == "live"
   end
 end
