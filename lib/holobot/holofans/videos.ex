@@ -177,7 +177,7 @@ defmodule Holobot.Holofans.Videos do
               prev_video = Memento.Query.read(Video, video.yt_video_key)
 
               if prev_video && is_golive?(prev_video, video) do
-                Helpers.send_golive_push(video)
+                Helpers.send_golive_push!(video)
               end
 
               Memento.Query.write(video)

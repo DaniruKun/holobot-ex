@@ -48,7 +48,7 @@ defmodule HelpersTest do
   describe "golive push" do
     test "send_golive_push/1 returns an ok response if push to webhook is succesful" do
       with_mock HTTPoison, post: fn url, data, headers -> {:ok, "ok_resp"} end do
-        assert ["ok_resp"] = Helpers.send_golive_push(@valid_video)
+        assert ["ok_resp"] = Helpers.send_golive_push!(@valid_video)
       end
     end
   end

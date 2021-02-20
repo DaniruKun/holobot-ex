@@ -108,8 +108,8 @@ defmodule Holobot.Helpers do
   @doc """
   Sends a JSON POST golive notification to all configured webhooks with the video info.
   """
-  @spec send_golive_push(any) :: list
-  def send_golive_push(video) do
+  @spec send_golive_push!(%Holobot.Holofans.Video{channel: binary(), live_start: binary()}) :: list
+  def send_golive_push!(video) do
     webhooks = Application.fetch_env!(:holobot, :golive_webhooks)
 
     for webhook <- webhooks do
