@@ -172,11 +172,15 @@ defmodule Holobot.Holofans.Videos do
             |> Map.get("videos")
             |> Enum.map(&Video.build_record/1)
 
+          prev_upcoming = get_upcoming()
+
           Memento.transaction!(fn ->
             for video <- videos_chunk do
-              prev_video = Memento.Query.read(Video, video.yt_video_key)
+              # If new video was upcoming and is now in live status, send push
+              if Enum.any?(prev_upcoming, fn x ->
+                   x.yt_video_key == video.yt_video_key
+                 end) and video.status == "live" do
 
-              if prev_video && is_golive?(prev_video, video) do
                 Helpers.send_golive_push!(video)
               end
 
@@ -227,6 +231,6 @@ defmodule Holobot.Holofans.Videos do
   end
 
   defp is_golive?(prev, next) do
-    prev.status in ["upcoming", "new"] && next.status == "live"
+    prev.status == "upcoming" && next.status == "live"
   end
 end
