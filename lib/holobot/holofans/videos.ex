@@ -37,11 +37,20 @@ defmodule Holobot.Holofans.Videos do
   @impl true
   def handle_info(:update, _state) do
     Logger.info("Updating Videos cache")
+    prev_upcoming = get_upcoming()
+
     # Clear records
     :ok = Memento.Table.clear(Video)
+
     # Do fetching from API and writing to cache
     cache_videos!(:live)
     cache_videos!(:upcoming)
+
+    prev_upcoming
+    |> get_golives()
+    |> Enum.each(&Helpers.send_golive_push!/1)
+
+    Logger.info("Calculating GoLive changeset")
 
     {:noreply, %{}}
   end
@@ -172,22 +181,10 @@ defmodule Holobot.Holofans.Videos do
             |> Map.get("videos")
             |> Enum.map(&Video.build_record/1)
 
-          prev_upcoming = get_upcoming()
-
-          IO.inspect(prev_upcoming, label: "Previous upcoming: \n")
-
-          IO.inspect(videos_chunk, label: "Videos chunk\n")
+          # IO.inspect(videos_chunk, label: "Videos chunk\n")
 
           Memento.transaction!(fn ->
             for video <- videos_chunk do
-              # If new video was upcoming and is now in live status, send push
-
-              if Enum.any?(prev_upcoming, fn x ->
-                   x.yt_video_key == video.yt_video_key
-                 end) and video.status == "live" do
-                Helpers.send_golive_push!(video)
-              end
-
               Memento.Query.write(video)
             end
           end)
@@ -232,5 +229,15 @@ defmodule Holobot.Holofans.Videos do
 
   defp is_free_chat?(vid) do
     vid.title |> String.downcase() |> String.contains?(["free", "chat"])
+  end
+
+  defp get_golives(prev) do
+    get_airing()
+    |> Enum.filter(fn stream ->
+      Enum.any?(
+        prev,
+        &(&1.yt_video_key == stream.yt_video_key && &1.status == "upcoming")
+      )
+    end)
   end
 end
