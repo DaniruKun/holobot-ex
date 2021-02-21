@@ -174,6 +174,10 @@ defmodule Holobot.Holofans.Videos do
 
           prev_upcoming = get_upcoming()
 
+          IO.inspect(prev_upcoming, label: "Previous upcoming: \n")
+
+          IO.inspect(videos_chunk, label: "Videos chunk\n")
+
           Memento.transaction!(fn ->
             for video <- videos_chunk do
               # If new video was upcoming and is now in live status, send push
