@@ -115,6 +115,8 @@ defmodule Holobot.Helpers do
   def send_golive_push!(video) do
     webhooks = Application.fetch_env!(:holobot, :golive_webhooks)
 
+    Logger.info("Channel #{video.channel} just went live!")
+
     for webhook <- webhooks do
       data =
         Jason.encode!(%{

@@ -177,10 +177,10 @@ defmodule Holobot.Holofans.Videos do
           Memento.transaction!(fn ->
             for video <- videos_chunk do
               # If new video was upcoming and is now in live status, send push
+
               if Enum.any?(prev_upcoming, fn x ->
                    x.yt_video_key == video.yt_video_key
                  end) and video.status == "live" do
-
                 Helpers.send_golive_push!(video)
               end
 
@@ -228,9 +228,5 @@ defmodule Holobot.Holofans.Videos do
 
   defp is_free_chat?(vid) do
     vid.title |> String.downcase() |> String.contains?(["free", "chat"])
-  end
-
-  defp is_golive?(prev, next) do
-    prev.status == "upcoming" && next.status == "live"
   end
 end
