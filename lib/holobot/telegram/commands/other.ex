@@ -5,6 +5,6 @@ defmodule Holobot.Telegram.Commands.Other do
   use Holobot.Telegram.Commander
 
   def other(update) do
-    Logger.info("Message: #{update.message.text}")
+    Logger.debug("Message: #{update.message.text}")
   end
 end
