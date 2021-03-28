@@ -5,6 +5,8 @@ defmodule Holobot.Telegram.Commands.Other do
   use Holobot.Telegram.Commander
 
   def other(update) do
-    Logger.debug("Message: #{update.message.text}")
+    if Map.has_key?(update, :message) do
+      Logger.debug("Message: #{update.message.text}")
+    end
   end
 end
