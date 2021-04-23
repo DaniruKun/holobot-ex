@@ -50,7 +50,7 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get a video by its Youtube video ID
   """
-  @spec get_video(binary()) :: %Video{} | nil
+  @spec get_video(binary()) :: Video.t() | nil
   def get_video(yt_vid_key) do
     Memento.transaction!(fn ->
       Memento.Query.read(Video, yt_vid_key)
@@ -60,7 +60,7 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of all videos.
   """
-  @spec get_all_videos :: list(%Video{})
+  @spec get_all_videos :: list(Video.t())
   def get_all_videos() do
     Memento.transaction!(fn ->
       Memento.Query.all(Video)
@@ -70,7 +70,7 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of currently airing live streams.
   """
-  @spec get_lives :: list(%Video{})
+  @spec get_lives :: list(Video.t())
   def get_lives() do
     guards = [
       {:==, :live_end, nil},
@@ -86,7 +86,7 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of upcoming streams.
   """
-  @spec get_upcoming() :: list(%Video{})
+  @spec get_upcoming() :: list(Video.t())
   def get_upcoming() do
     guards = [
       {:==, :live_start, nil},
@@ -103,7 +103,7 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Get list of only free chat streams.
   """
-  @spec get_free_chats :: [%Video{}]
+  @spec get_free_chats :: [Video.t()]
   def get_free_chats() do
     guards = [
       {:==, :live_start, nil},
@@ -120,7 +120,7 @@ defmodule Holobot.Holofans.Videos do
   @doc """
   Search for a video by title. Returns a list of up to 10 results.
   """
-  @spec search_query(binary()) :: list(%Video{})
+  @spec search_query(binary()) :: list(Video.t())
   def search_query(query) do
     fetch_videos!(%{limit: 10, title: query}) |> Map.get("videos")
   end

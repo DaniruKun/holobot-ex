@@ -19,7 +19,20 @@ defmodule Holobot.Holofans.Video do
     index: [:title],
     type: :set
 
-  @spec build_record(map) :: struct()
+  @type t() :: %__MODULE__{
+          yt_video_key: binary(),
+          title: binary(),
+          status: binary(),
+          live_schedule: binary(),
+          live_start: binary() | nil,
+          live_end: binary() | nil,
+          live_viewers: pos_integer() | nil,
+          channel: map(),
+          is_uploaded: boolean(),
+          is_captioned: boolean()
+        }
+
+  @spec build_record(map) :: t()
   def build_record(video) do
     %__MODULE__{
       yt_video_key: video["yt_video_key"],

@@ -44,7 +44,7 @@ defmodule Holobot.Holofans.Channels do
   @doc """
   Get a list of all channels.
   """
-  @spec get_channels :: list(%Channel{})
+  @spec get_channels :: list(Channel.t())
   def get_channels() do
     Memento.transaction!(fn ->
       Memento.Query.all(Channel)
@@ -54,19 +54,19 @@ defmodule Holobot.Holofans.Channels do
   @doc """
   Get a channel by its Youtube channel ID.
   """
-  @spec get_channel(binary()) :: %Channel{} | nil
+  @spec get_channel(binary()) :: Channel.t() | nil
   def get_channel(yt_channel_id) do
     Memento.transaction!(fn ->
       Memento.Query.read(Channel, yt_channel_id)
     end)
   end
 
-  @spec get_channels_top_subs(integer) :: [any]
+  @spec get_channels_top_subs(integer) :: [Channel.t()]
   def get_channels_top_subs(limit \\ 10) do
     get_channels() |> Enum.sort_by(& &1.subscriber_count, :desc) |> Enum.take(limit)
   end
 
-  @spec get_channels_top_views(integer) :: [any]
+  @spec get_channels_top_views(integer) :: [Channel.t()]
   def get_channels_top_views(limit \\ 10) do
     get_channels() |> Enum.sort_by(& &1.view_count, :desc) |> Enum.take(limit)
   end

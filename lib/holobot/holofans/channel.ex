@@ -16,6 +16,18 @@ defmodule Holobot.Holofans.Channel do
     index: [:name],
     type: :set
 
+  @type t() :: %__MODULE__{
+          yt_channel_id: binary(),
+          name: binary(),
+          description: binary(),
+          twitter_link: binary(),
+          view_count: pos_integer(),
+          subscriber_count: pos_integer(),
+          video_count: pos_integer(),
+          photo: binary()
+        }
+
+  @spec build_record(nil | maybe_improper_list | map) :: t()
   def build_record(channel) do
     %__MODULE__{
       yt_channel_id: channel["yt_channel_id"],
