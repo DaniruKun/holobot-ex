@@ -23,11 +23,18 @@ defmodule Holobot.Holofans.Channels do
   def init(_args) do
     # Setup Mnesia table
     setup_table()
-    # Perform initial cache
-    send(self(), :update)
-    # Start the update timed interval polling
+
+    {:ok, %{}, {:continue, :update}}
+  end
+
+  @impl true
+  def handle_continue(:update, state) do
+    Logger.info("Performing initial channels cache")
+
+    Process.send(self(), :update, [])
     :timer.send_interval(@cache_update_interval, :update)
-    {:ok, %{}}
+
+    {:noreply, state}
   end
 
   @impl true
