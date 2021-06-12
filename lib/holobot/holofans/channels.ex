@@ -31,7 +31,7 @@ defmodule Holobot.Holofans.Channels do
   def handle_continue(:update, state) do
     Logger.info("Performing initial channels cache")
 
-    Process.send(self(), :update, [])
+    send(self(), :update)
     :timer.send_interval(@cache_update_interval, :update)
 
     {:noreply, state}
