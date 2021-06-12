@@ -7,7 +7,7 @@ defmodule Holobot.Holofans.Videos do
   require Logger
   require Memento
 
-  alias Holobot.Holofans.Video
+  alias Holobot.Holofans.{Client, Video}
 
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
@@ -18,7 +18,7 @@ defmodule Holobot.Holofans.Videos do
   defdelegate get_airing, to: __MODULE__, as: :get_lives
 
   def start_link(init_args \\ []) do
-    Logger.info("Started Videos cache server")
+    Logger.info("Starting Videos cache server")
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
@@ -26,11 +26,17 @@ defmodule Holobot.Holofans.Videos do
   def init(_args) do
     # Setup Mnesia table
     setup_table()
-    # Perform initial cache
+    {:ok, %{}, {:continue, :update}}
+  end
+
+  @impl true
+  def handle_continue(:update, state) do
+    Logger.info("Performing initial Videos cache")
+
     send(self(), :update)
-    # Start the update timed interval polling
     :timer.send_interval(@cache_update_interval, :update)
-    {:ok, %{}}
+
+    {:noreply, state}
   end
 
   @impl true
@@ -122,7 +128,9 @@ defmodule Holobot.Holofans.Videos do
   """
   @spec search_query(binary()) :: list(Video.t())
   def search_query(query) do
-    fetch_videos!(%{limit: 10, title: query}) |> Map.get("videos")
+    with {:ok, results} <- fetch_videos(%{limit: 10, title: query}) do
+      results[:videos]
+    end
   end
 
   # Helpers
@@ -149,7 +157,8 @@ defmodule Holobot.Holofans.Videos do
     }
 
     try do
-      %{"total" => total} = fetch_videos!(filters)
+      {:ok, results} = fetch_videos(filters)
+      total = results[:total]
 
       # Set number of total results to fetch
       items_to_fetch =
@@ -164,16 +173,13 @@ defmodule Holobot.Holofans.Videos do
         |> Enum.each(fn offset ->
           Logger.debug("Current offset: #{offset}")
 
-          videos_chunk =
-            filters
-            |> Map.merge(%{offset: offset})
-            |> fetch_videos!()
-            |> Map.get("videos")
-            |> Enum.map(&Video.build_record/1)
-
-          Memento.transaction!(fn ->
-            for video <- videos_chunk, do: Memento.Query.write(video)
-          end)
+          with {:ok, results} <- fetch_videos(Map.merge(filters, %{offset: offset})),
+               {:ok, videos} <- Access.fetch(results, :videos),
+               videos_chunk <- Stream.map(videos, &Video.build_record/1) do
+            Memento.transaction!(fn ->
+              Enum.each(videos_chunk, &Memento.Query.write/1)
+            end)
+          end
         end)
 
         Logger.info("Cached total of #{items_to_fetch} videos of status: #{status}")
@@ -185,33 +191,25 @@ defmodule Holobot.Holofans.Videos do
     end
   end
 
-  defp fetch_videos!(params \\ %{}) do
-    holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
-    path = "/v1/videos"
+  defp fetch_videos(params \\ %{}) do
+    query = URI.encode_query(params)
+    url = URI.parse("/videos") |> Map.put(:query, query) |> URI.to_string()
 
-    url =
-      holofans_api_base
-      |> URI.parse()
-      |> URI.merge(path)
-      |> Map.put(:query, URI.encode_query(params))
-      |> URI.to_string()
-
-    case HTTPoison.get(url) do
+    case Client.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, decoded} = Jason.decode(body)
-        decoded
+        {:ok, body}
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         Logger.warning("Resource not found")
+        {:error, "Not found"}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
+        {:error, reason}
     end
   end
 
-  defp is_not_free_chat?(vid) do
-    !is_free_chat?(vid)
-  end
+  defp is_not_free_chat?(vid), do: !is_free_chat?(vid)
 
   defp is_free_chat?(vid) do
     vid.title |> String.downcase() |> String.contains?(["free", "chat"])

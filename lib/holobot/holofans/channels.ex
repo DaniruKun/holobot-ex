@@ -8,14 +8,14 @@ defmodule Holobot.Holofans.Channels do
   require Logger
   require Memento
 
-  alias Holobot.Holofans.Channel
+  alias Holobot.Holofans.{Channel, Client}
 
   require Logger
 
   @cache_update_interval 3_600_000
 
   def start_link(init_args \\ []) do
-    Logger.info("Started Channels cache server")
+    Logger.info("Starting Channels cache server")
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
@@ -23,11 +23,18 @@ defmodule Holobot.Holofans.Channels do
   def init(_args) do
     # Setup Mnesia table
     setup_table()
-    # Perform initial cache
+
+    {:ok, %{}, {:continue, :update}}
+  end
+
+  @impl true
+  def handle_continue(:update, state) do
+    Logger.info("Performing initial channels cache")
+
     send(self(), :update)
-    # Start the update timed interval polling
     :timer.send_interval(@cache_update_interval, :update)
-    {:ok, %{}}
+
+    {:noreply, state}
   end
 
   @impl true
@@ -87,7 +94,9 @@ defmodule Holobot.Holofans.Channels do
     }
 
     try do
-      %{"total" => total} = fetch_channels!(filter)
+      {:ok, results} = fetch_channels(filter)
+
+      total = results[:total]
 
       if total > 0 do
         0..total
@@ -95,16 +104,13 @@ defmodule Holobot.Holofans.Channels do
         |> Enum.each(fn offset ->
           Logger.debug("Current offset: #{offset}")
 
-          channels_chunk =
-            filter
-            |> Map.merge(%{offset: offset})
-            |> fetch_channels!()
-            |> Map.get("channels")
-            |> Enum.map(&Channel.build_record/1)
-
-          Memento.transaction!(fn ->
-            for channel <- channels_chunk, do: Memento.Query.write(channel)
-          end)
+          with {:ok, results} <- fetch_channels(Map.merge(filter, %{offset: offset})),
+               {:ok, channels} <- Access.fetch(results, :channels),
+               channels_chunk <- Stream.map(channels, &Channel.build_record/1) do
+            Memento.transaction!(fn ->
+              Enum.each(channels_chunk, &Memento.Query.write/1)
+            end)
+          end
 
           Logger.info("Cached total of #{total} channels")
         end)
@@ -121,32 +127,21 @@ defmodule Holobot.Holofans.Channels do
     end
   end
 
-  defp fetch_channels!(filter \\ %{}) do
-    fetch_channel_resource("/v1/channels", filter)
-  end
+  defp fetch_channels(params) do
+    query = URI.encode_query(params)
+    url = URI.parse("/channels") |> Map.put(:query, query) |> URI.to_string()
 
-  defp fetch_channel_resource(path, params \\ %{}) do
-    holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
-
-    url =
-      holofans_api_base
-      |> URI.parse()
-      |> URI.merge(path)
-      |> Map.put(:query, URI.encode_query(params))
-      |> URI.to_string()
-
-    Logger.debug("Making request to URL: #{url}")
-
-    case HTTPoison.get(url) do
+    case Client.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, decoded} = Jason.decode(body)
-        decoded
+        {:ok, body}
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         Logger.warning("Resource not found")
+        {:error, "Not found"}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
+        {:error, reason}
     end
   end
 end
