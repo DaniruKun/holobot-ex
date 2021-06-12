@@ -7,7 +7,7 @@ defmodule Holobot.Holofans.Videos do
   require Logger
   require Memento
 
-  alias Holobot.Holofans.Video
+  alias Holobot.Holofans.{Client, Video}
 
   @type video_status() :: :new | :live | :upcoming | :past | :missing
 
@@ -157,7 +157,8 @@ defmodule Holobot.Holofans.Videos do
     }
 
     try do
-      {:ok, %{"total" => total}} = fetch_videos(filters)
+      {:ok, results} = fetch_videos(filters)
+      total = results[:total]
 
       # Set number of total results to fetch
       items_to_fetch =
@@ -173,10 +174,10 @@ defmodule Holobot.Holofans.Videos do
           Logger.debug("Current offset: #{offset}")
 
           with {:ok, results} <- fetch_videos(Map.merge(filters, %{offset: offset})),
-               {:ok, videos} <- Map.fetch(results, "videos"),
-               videos_chunk <- Enum.map(videos, &Video.build_record/1) do
+               {:ok, videos} <- Access.fetch(results, :videos),
+               videos_chunk <- Stream.map(videos, &Video.build_record/1) do
             Memento.transaction!(fn ->
-              for video <- videos_chunk, do: Memento.Query.write(video)
+              Enum.each(videos_chunk, &Memento.Query.write/1)
             end)
           end
         end)
@@ -191,19 +192,13 @@ defmodule Holobot.Holofans.Videos do
   end
 
   defp fetch_videos(params \\ %{}) do
-    holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
-    path = "/v1/videos"
+    query = URI.encode_query(params)
+    url = URI.parse("/videos") |> Map.put(:query, query) |> URI.to_string()
 
-    url =
-      holofans_api_base
-      |> URI.parse()
-      |> URI.merge(path)
-      |> Map.put(:query, URI.encode_query(params))
-      |> URI.to_string()
-
-    case HTTPoison.get(url) do
+    case Client.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        Jason.decode(body)
+        Logger.debug("Returnign request result:")
+        {:ok, body}
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         Logger.warning("Resource not found")
@@ -215,9 +210,7 @@ defmodule Holobot.Holofans.Videos do
     end
   end
 
-  defp is_not_free_chat?(vid) do
-    !is_free_chat?(vid)
-  end
+  defp is_not_free_chat?(vid), do: !is_free_chat?(vid)
 
   defp is_free_chat?(vid) do
     vid.title |> String.downcase() |> String.contains?(["free", "chat"])
