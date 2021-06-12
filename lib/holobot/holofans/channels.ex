@@ -94,7 +94,7 @@ defmodule Holobot.Holofans.Channels do
     }
 
     try do
-      %{"total" => total} = fetch_channels!(filter)
+      {:ok, %{"total" => total}} = fetch_channels(filter)
 
       if total > 0 do
         0..total
@@ -102,16 +102,13 @@ defmodule Holobot.Holofans.Channels do
         |> Enum.each(fn offset ->
           Logger.debug("Current offset: #{offset}")
 
-          channels_chunk =
-            filter
-            |> Map.merge(%{offset: offset})
-            |> fetch_channels!()
-            |> Map.get("channels")
-            |> Enum.map(&Channel.build_record/1)
-
-          Memento.transaction!(fn ->
-            for channel <- channels_chunk, do: Memento.Query.write(channel)
-          end)
+          with {:ok, results} <- fetch_channels(Map.merge(filter, %{offset: offset})),
+               {:ok, channels} <- Map.fetch(results, "channels"),
+               channels_chunk <- Enum.map(channels, &Channel.build_record/1) do
+            Memento.transaction!(fn ->
+              for channel <- channels_chunk, do: Memento.Query.write(channel)
+            end)
+          end
 
           Logger.info("Cached total of #{total} channels")
         end)
@@ -128,7 +125,7 @@ defmodule Holobot.Holofans.Channels do
     end
   end
 
-  defp fetch_channels!(filter \\ %{}) do
+  defp fetch_channels(filter \\ %{}) do
     fetch_channel_resource("/v1/channels", filter)
   end
 
@@ -146,14 +143,15 @@ defmodule Holobot.Holofans.Channels do
 
     case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, decoded} = Jason.decode(body)
-        decoded
+        Jason.decode(body)
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         Logger.warning("Resource not found")
+        {:error, "Not found"}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
+        {:error, reason}
     end
   end
 end
