@@ -18,7 +18,7 @@ defmodule Holobot.Holofans.Videos do
   defdelegate get_airing, to: __MODULE__, as: :get_lives
 
   def start_link(init_args \\ []) do
-    Logger.info("Started Videos cache server")
+    Logger.info("Starting Videos cache server")
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
@@ -129,7 +129,7 @@ defmodule Holobot.Holofans.Videos do
   @spec search_query(binary()) :: list(Video.t())
   def search_query(query) do
     with {:ok, results} <- fetch_videos(%{limit: 10, title: query}) do
-      results |> Map.get("videos")
+      results[:videos]
     end
   end
 

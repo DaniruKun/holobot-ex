@@ -15,7 +15,7 @@ defmodule Holobot.Holofans.Channels do
   @cache_update_interval 3_600_000
 
   def start_link(init_args \\ []) do
-    Logger.info("Started Channels cache server")
+    Logger.info("Starting Channels cache server")
     GenServer.start_link(__MODULE__, [init_args], name: __MODULE__)
   end
 
