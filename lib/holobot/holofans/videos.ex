@@ -128,7 +128,9 @@ defmodule Holobot.Holofans.Videos do
   """
   @spec search_query(binary()) :: list(Video.t())
   def search_query(query) do
-    fetch_videos!(%{limit: 10, title: query}) |> Map.get("videos")
+    with {:ok, results} <- fetch_videos(%{limit: 10, title: query}) do
+      results |> Map.get("videos")
+    end
   end
 
   # Helpers
@@ -155,7 +157,7 @@ defmodule Holobot.Holofans.Videos do
     }
 
     try do
-      %{"total" => total} = fetch_videos!(filters)
+      {:ok, %{"total" => total}} = fetch_videos(filters)
 
       # Set number of total results to fetch
       items_to_fetch =
@@ -170,16 +172,13 @@ defmodule Holobot.Holofans.Videos do
         |> Enum.each(fn offset ->
           Logger.debug("Current offset: #{offset}")
 
-          videos_chunk =
-            filters
-            |> Map.merge(%{offset: offset})
-            |> fetch_videos!()
-            |> Map.get("videos")
-            |> Enum.map(&Video.build_record/1)
-
-          Memento.transaction!(fn ->
-            for video <- videos_chunk, do: Memento.Query.write(video)
-          end)
+          with {:ok, results} <- fetch_videos(Map.merge(filters, %{offset: offset})),
+               {:ok, videos} <- Map.fetch(results, "videos"),
+               videos_chunk <- Enum.map(videos, &Video.build_record/1) do
+            Memento.transaction!(fn ->
+              for video <- videos_chunk, do: Memento.Query.write(video)
+            end)
+          end
         end)
 
         Logger.info("Cached total of #{items_to_fetch} videos of status: #{status}")
@@ -191,7 +190,7 @@ defmodule Holobot.Holofans.Videos do
     end
   end
 
-  defp fetch_videos!(params \\ %{}) do
+  defp fetch_videos(params \\ %{}) do
     holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
     path = "/v1/videos"
 
@@ -204,14 +203,15 @@ defmodule Holobot.Holofans.Videos do
 
     case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, decoded} = Jason.decode(body)
-        decoded
+        Jason.decode(body)
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         Logger.warning("Resource not found")
+        {:error, "Not found"}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
+        {:error, reason}
     end
   end
 
