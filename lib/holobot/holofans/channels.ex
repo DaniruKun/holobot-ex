@@ -8,7 +8,7 @@ defmodule Holobot.Holofans.Channels do
   require Logger
   require Memento
 
-  alias Holobot.Holofans.Channel
+  alias Holobot.Holofans.{Channel, Client}
 
   require Logger
 
@@ -94,7 +94,9 @@ defmodule Holobot.Holofans.Channels do
     }
 
     try do
-      {:ok, %{"total" => total}} = fetch_channels(filter)
+      {:ok, results} = fetch_channels(filter)
+
+      total = results[:total]
 
       if total > 0 do
         0..total
@@ -103,10 +105,10 @@ defmodule Holobot.Holofans.Channels do
           Logger.debug("Current offset: #{offset}")
 
           with {:ok, results} <- fetch_channels(Map.merge(filter, %{offset: offset})),
-               {:ok, channels} <- Map.fetch(results, "channels"),
-               channels_chunk <- Enum.map(channels, &Channel.build_record/1) do
+               {:ok, channels} <- Access.fetch(results, :channels),
+               channels_chunk <- Stream.map(channels, &Channel.build_record/1) do
             Memento.transaction!(fn ->
-              for channel <- channels_chunk, do: Memento.Query.write(channel)
+              Enum.each(channels_chunk, &Memento.Query.write/1)
             end)
           end
 
@@ -125,25 +127,13 @@ defmodule Holobot.Holofans.Channels do
     end
   end
 
-  defp fetch_channels(filter \\ %{}) do
-    fetch_channel_resource("/v1/channels", filter)
-  end
+  defp fetch_channels(params) do
+    query = URI.encode_query(params)
+    url = URI.parse("/channels") |> Map.put(:query, query) |> URI.to_string()
 
-  defp fetch_channel_resource(path, params \\ %{}) do
-    holofans_api_base = Application.fetch_env!(:holobot, :holofans_api)
-
-    url =
-      holofans_api_base
-      |> URI.parse()
-      |> URI.merge(path)
-      |> Map.put(:query, URI.encode_query(params))
-      |> URI.to_string()
-
-    Logger.debug("Making request to URL: #{url}")
-
-    case HTTPoison.get(url) do
+    case Client.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        Jason.decode(body)
+        {:ok, body}
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         Logger.warning("Resource not found")

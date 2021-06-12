@@ -20,7 +20,7 @@ defmodule Holobot.Application do
       {Holobot.Telegram.Matcher, []}
     ]
 
-    HTTPoison.start()
+    Holobot.Holofans.Client.start()
 
     opts = [strategy: :one_for_one, name: Holobot.Supervisor]
     Supervisor.start_link(children, opts)

@@ -197,7 +197,6 @@ defmodule Holobot.Holofans.Videos do
 
     case Client.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        Logger.debug("Returnign request result:")
         {:ok, body}
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
