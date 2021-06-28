@@ -4,7 +4,7 @@
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-<img src="https://static.miraheze.org/hololivewiki/thumb/8/8a/Illustrator_Artwork_-_A-Chan_01.jpg/301px-Illustrator_Artwork_-_A-Chan_01.jpg" alt="A-Chan" width="200"/>
+<img src="https://static.miraheze.org/hololivewiki/c/c7/Yuujin_-_A_-_Portrait_3D_02.png" alt="A-Chan" width="250"/>
 
 _Original art by [@ordan](https://twitter.com/ordan)_
 
