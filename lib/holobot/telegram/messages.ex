@@ -17,7 +17,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Builds a formatted list of live streams for given status.
   """
-  @spec build_msg_for_status(list(%Video{}), Videos.video_status()) :: binary()
+  @spec build_msg_for_status(list(Video.t()), Videos.video_status()) :: binary()
   def build_msg_for_status(videos, status) do
     body =
       videos
@@ -35,7 +35,7 @@ defmodule Holobot.Telegram.Messages do
     header <> body
   end
 
-  @spec build_channels_list_msg(list(%Channel{})) :: binary()
+  @spec build_channels_list_msg(list(Channel.t())) :: binary()
   def build_channels_list_msg(channels) do
     channels_body =
       channels
@@ -62,7 +62,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Returns a list of InlineQueryResultArticle structs with video info.
   """
-  @spec build_live_articles_inline(list(%Video{})) :: list(%Article{})
+  @spec build_live_articles_inline(list(Video.t())) :: list(%Article{})
   def build_live_articles_inline(lives) do
     lives |> Enum.map(&build_live_article/1)
   end
@@ -155,7 +155,7 @@ defmodule Holobot.Telegram.Messages do
     }
   end
 
-  @spec build_channel_article(%Channel{}) :: %Article{}
+  @spec build_channel_article(Channel.t()) :: %Article{}
   defp build_channel_article(channel) do
     url = "https://www.youtube.com/channel/#{channel.yt_channel_id}"
 
