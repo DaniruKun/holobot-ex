@@ -9,10 +9,7 @@ defmodule Holobot.Telegram.Messages do
   require Nadia
 
   alias Holobot.Helpers
-  alias Holobot.Holofans.Channel
-  alias Holobot.Holofans.Channels
-  alias Holobot.Holofans.Video
-  alias Holobot.Holofans.Videos
+  alias Holobot.Holofans.{Channel, Channels, Video, Videos}
   alias Nadia.Model.InlineQueryResult.Article
 
   @yt_vid_url_base "https://youtu.be/"
