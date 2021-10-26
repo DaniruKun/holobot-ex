@@ -3,9 +3,8 @@ defmodule MessagesTest do
   use ExUnit.Case, async: true
 
   alias Holobot.Telegram.Messages
-  alias Holobot.Holofans.Video
-  alias Holobot.Holofans.Channel
-  alias Holobot.Holofans.Channels
+  alias Holobot.Holofans.{Channels, Video}
+  alias Holodex.Model.Channel
   alias Nadia.Model.InlineQueryResult.Article
 
   import Mock
@@ -29,10 +28,10 @@ defmodule MessagesTest do
     name: "Pekora Ch. 兎田ぺこら",
     description: "Konpeko konpeko konpekooo",
     subscriber_count: 1_110_000,
-    twitter_link: "usadapekora",
+    twitter: "usadapekora",
     video_count: 318,
     view_count: 95_176_833,
-    yt_channel_id: "UC1DCedRgGHBdm81E1llLhOQ",
+    id: "UC1DCedRgGHBdm81E1llLhOQ",
     photo: "https://yt3.ggpht.com/ytc/photo-id"
   }
 

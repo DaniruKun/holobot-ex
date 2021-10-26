@@ -9,15 +9,16 @@ defmodule Holobot.Telegram.Messages do
   require Nadia
 
   alias Holobot.Helpers
-  alias Holobot.Holofans.{Channel, Channels, Video, Videos}
+  alias Holobot.Holofans.{Channels, Video, Videos}
   alias Nadia.Model.InlineQueryResult.Article
+  alias Holodex.Model.Channel
 
   @yt_vid_url_base "https://youtu.be/"
 
   @doc """
   Builds a formatted list of live streams for given status.
   """
-  @spec build_msg_for_status(list(Video.t()), Videos.video_status()) :: binary()
+  @spec build_msg_for_status(list(Video.t()), Videos.video_status()) :: String.t()
   def build_msg_for_status(videos, status) do
     body =
       videos
@@ -35,7 +36,7 @@ defmodule Holobot.Telegram.Messages do
     header <> body
   end
 
-  @spec build_channels_list_msg(list(Channel.t())) :: binary()
+  @spec build_channels_list_msg(list(Channel.t())) :: String.t()
   def build_channels_list_msg(channels) do
     channels_body =
       channels
@@ -48,7 +49,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Returns bot help message.
   """
-  @spec build_help_msg() :: binary()
+  @spec build_help_msg() :: String.t()
   def build_help_msg() do
     """
     I am A-Chan (友人A), I can answer any questions about Hololive streams, channels and other things!
@@ -119,14 +120,12 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  defp build_channel_entry(channel) do
-    %{
-      name: name,
-      subscriber_count: subs,
-      yt_channel_id: ch_id,
-      twitter_link: twitter
-    } = channel
-
+  defp build_channel_entry(%{
+         name: name,
+         subscriber_count: subs,
+         id: ch_id,
+         twitter: twitter
+       }) do
     ch_emoji = Helpers.get_channel_emoji(ch_id)
 
     """
@@ -137,7 +136,6 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  @spec build_live_article(%Video{}) :: %Article{}
   defp build_live_article(live) do
     url = "https://youtu.be/#{live.yt_video_key}"
 
@@ -155,12 +153,11 @@ defmodule Holobot.Telegram.Messages do
     }
   end
 
-  @spec build_channel_article(Channel.t()) :: %Article{}
   defp build_channel_article(channel) do
-    url = "https://www.youtube.com/channel/#{channel.yt_channel_id}"
+    url = "https://www.youtube.com/channel/#{channel.id}"
 
     %Article{
-      id: channel.yt_channel_id,
+      id: channel.id,
       title: channel.name,
       thumb_url: channel.photo,
       thumb_width: 600,
@@ -172,7 +169,7 @@ defmodule Holobot.Telegram.Messages do
         <b>#{channel.name}</b>
         <a href="#{channel.photo}">Photo</a>
 
-        <a href="#{url}">Youtube</a> <a href="https://twitter.com/#{channel.twitter_link}">Twitter</a>
+        <a href="#{url}">Youtube</a> <a href="https://twitter.com/#{channel.twitter}">Twitter</a>
 
         #{channel.description}
         """,

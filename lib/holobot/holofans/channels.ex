@@ -8,9 +8,7 @@ defmodule Holobot.Holofans.Channels do
   require Logger
   require Memento
 
-  alias Holobot.Holofans.{Channel, Client}
-
-  require Logger
+  alias Holobot.Holofans.Channel
 
   @cache_update_interval 3_600_000
 
@@ -90,58 +88,49 @@ defmodule Holobot.Holofans.Channels do
   defp cache_channels!(step \\ 50) do
     filter = %{
       sort: "name",
-      limit: step
+      limit: step,
+      org: "Hololive"
     }
 
     try do
-      {:ok, results} = fetch_channels(filter)
+      0..100
+      |> Stream.filter(&(rem(&1, step) == 0))
+      |> Enum.each(fn offset ->
+        Logger.debug("Current offset: #{offset}")
 
-      total = results[:total]
+        with {:ok, channels_chunk} <- fetch_channels(Map.merge(filter, %{offset: offset})),
+             channels <- Stream.map(channels_chunk, &Channel.new/1) do
+          Memento.transaction!(fn ->
+            Enum.each(channels, &Memento.Query.write/1)
+          end)
+        end
 
-      if total > 0 do
-        0..total
-        |> Stream.filter(&(rem(&1, step) == 0))
-        |> Enum.each(fn offset ->
-          Logger.debug("Current offset: #{offset}")
-
-          with {:ok, results} <- fetch_channels(Map.merge(filter, %{offset: offset})),
-               {:ok, channels} <- Access.fetch(results, :channels),
-               channels_chunk <- Stream.map(channels, &Channel.build_record/1) do
-            Memento.transaction!(fn ->
-              Enum.each(channels_chunk, &Memento.Query.write/1)
-            end)
-          end
-
-          Logger.info("Cached total of #{total} channels")
-        end)
-      end
+        Logger.info("Cached channels")
+      end)
     rescue
       RuntimeError -> "Error when caching channels!"
     end
   end
 
   defp setup_table() do
-    if !Holobot.Helpers.table_exists?(Channel) do
+    unless Holobot.Helpers.table_exists?(Channel) do
       Logger.info("Setting up Mnesia table Channel")
       Memento.Table.create!(Channel)
     end
   end
 
   defp fetch_channels(params) do
-    query = URI.encode_query(params)
-    url = URI.parse("/channels") |> Map.put(:query, query) |> URI.to_string()
+    case Holodex.Api.Channels.list_channels(params) do
+      {:ok, channels} ->
+        {:ok, channels}
 
-    case Client.get(url) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, body}
+      {:error, %HTTPoison.Error{}} ->
+        Logger.warning("Request to Channels resource failed!")
+        {:error, :list_channels}
 
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        Logger.warning("Resource not found")
-        {:error, "Not found"}
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        Logger.error(reason)
-        {:error, reason}
+      _ ->
+        Logger.error("Failed to fetch Channels")
+        {:error, :list_channels}
     end
   end
 end
