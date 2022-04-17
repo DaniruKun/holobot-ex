@@ -41,10 +41,10 @@ defmodule Holobot.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:nadia, "~> 0.7.0"},
       {:mock, "~> 0.3.6", only: [:dev, :test]},
-	  {:httpoison, "~> 1.8", override: true},
-	  {:telemetry, "~> 0.4", override: true},
+      {:httpoison, "~> 1.8", override: true},
+      {:telemetry, "~> 0.4", override: true},
       {:memento, "~> 0.3.1"},
-	  {:holodex, "~> 0.1.3"},
+      {:holodex, "~> 0.1.3"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.4", only: [:dev]}
     ]
