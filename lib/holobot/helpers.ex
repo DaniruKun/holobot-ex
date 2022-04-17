@@ -71,6 +71,9 @@ defmodule Holobot.Helpers do
       "UCYz_5n-uDuChHtLo7My1HnQ" => "🧟‍♀️",
       "UC727SQYUvx5pDDGQpTICNWg" => "🍂",
       "UChgTyjG-pdNvxxhdsXfHQ5Q" => "🦚",
+      "UCTvHWSfBZgtxE4sILOaurIQ" => "📜",
+      "UCZLZ8Jjx_RN2CXloOmgTHVg" => "🔨",
+      "UCjLEmnpCNeisMxy134KPwWw" => "☔",
       # HololiveEN
       "UCL_qhgtOy0dy1Agp8vkySQg" => "💀",
       "UCHsx4Hqa-1ORjQTh9TYDhww" => "🐔",
@@ -88,7 +91,7 @@ defmodule Holobot.Helpers do
       "UCs9_O1tRPMQTHQ-N_L6FU2g" => "🥀",
       "UC6eWCld0KwmyHFbAqK3V-Rw" => "🧪",
       "UCIBY1ollUsauvVi4hW4cumw" => "🎣",
-      "UC_vMYWcDjmfdpH6r4TTn1MQ" => "🍃"	
+      "UC_vMYWcDjmfdpH6r4TTn1MQ" => "🍃"
     }
 
     Map.get(channel_emoji, yt_channel_id, "")
@@ -107,7 +110,7 @@ defmodule Holobot.Helpers do
   @doc """
   Splits and cleans a message binary into lowercase, non-punctuated tokens.
   """
-  @spec tokenize_msg(binary) :: [binary]
+  @spec tokenize_msg(String.t()) :: [String.t()]
   def tokenize_msg(msg_text) when is_binary(msg_text) or is_bitstring(msg_text) do
     msg_text
     |> String.replace(~r/[[:punct:]]/, "")

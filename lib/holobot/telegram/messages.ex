@@ -62,7 +62,7 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Returns a list of InlineQueryResultArticle structs with video info.
   """
-  @spec build_live_articles_inline(list(Video.t())) :: list(%Article{})
+  @spec build_live_articles_inline(list(Video.t())) :: list(Article.t())
   def build_live_articles_inline(lives) do
     lives |> Enum.map(&build_live_article/1)
   end
@@ -70,12 +70,12 @@ defmodule Holobot.Telegram.Messages do
   @doc """
   Returns a list of InlineQueryResultArticle structs with channel info.
   """
-  @spec build_channel_articles_inline(Enumerable.t()) :: [%Article{}]
+  @spec build_channel_articles_inline(Enumerable.t()) :: [Article.t()]
   def build_channel_articles_inline(channels) do
     channels |> Enum.map(&build_channel_article/1)
   end
 
-  @spec build_live_msg_entry(%Video{}) :: binary()
+  @spec build_live_msg_entry(Video.t()) :: binary()
   defp build_live_msg_entry(live) do
     %{
       :channel => yt_channel_id,
@@ -137,7 +137,7 @@ defmodule Holobot.Telegram.Messages do
     """
   end
 
-  @spec build_live_article(%Video{}) :: %Article{}
+  @spec build_live_article(Video.t()) :: Article.t()
   defp build_live_article(live) do
     url = "https://youtu.be/#{live.yt_video_key}"
 
@@ -155,7 +155,7 @@ defmodule Holobot.Telegram.Messages do
     }
   end
 
-  @spec build_channel_article(Channel.t()) :: %Article{}
+  @spec build_channel_article(Channel.t()) :: Article.t()
   defp build_channel_article(channel) do
     url = "https://www.youtube.com/channel/#{channel.yt_channel_id}"
 

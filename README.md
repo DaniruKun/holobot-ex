@@ -16,7 +16,7 @@ All data is fetched from <https://api.holotools.app>
 
 ## Architecture
 
-<img src="doc/architecture.jpeg" width="800">
+<img src="doc/holobot-system-diagram.png" width="800">
 
 ## Features
 
