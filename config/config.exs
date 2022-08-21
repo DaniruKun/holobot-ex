@@ -17,10 +17,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Nadia Telegram bot API wrapper config
-config :nadia,
-  token: {:system, "TELEGRAM_TOKEN", "some_token"}
-
 config :mnesia,
   dir: '.mnesia/#{Mix.env()}/#{node()}'
 

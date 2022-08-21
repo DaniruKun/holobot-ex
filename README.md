@@ -2,8 +2,6 @@
 
 ![Elixir CI](https://github.com/DaniruKun/holobot-tg/workflows/Elixir%20CI/badge.svg)
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
 <img src="https://static.miraheze.org/hololivewiki/c/c7/Yuujin_-_A_-_Portrait_3D_02.png" alt="A-Chan" width="250"/>
 
 _Original art by [@ordan](https://twitter.com/ordan)_
@@ -39,6 +37,8 @@ All data is fetched from <https://api.holotools.app>
 The versions of Erlang and Elixir specified in [.tool-versions](.tool-versions)
 
 You will also need to have an active Telegram account.
+
+You must also set the `TELEGRAM_TOKEN` at runtime.
 
 ### Roadmap
 

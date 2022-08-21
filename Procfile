@@ -1,1 +1,0 @@
-worker: elixir --sname holobot -S mix server
